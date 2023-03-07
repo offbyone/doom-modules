@@ -1,3 +1,6 @@
+;;; offby1/exp/autoload/chatgpt.el -*- lexical-binding: t; -*-
+;;;###if (modulep! +chatgpt)
+
 ;;; chatgpt bindings
 
 ;;; Modeled on Xe Iaso's chatgpt bindings, with doom conventions
@@ -80,24 +83,27 @@ By default this will use the server api.openai.com and <username>-token as the u
                     (insert (+chatgpt--chomp content))))))
     ))
 
+;;;###autoload
 (defun +ask-chatgpt (question)
   "Ask ChatGPT a QUESTION and get the message put into the current buffer"
   (interactive "squestion> ")
   (+chatgpt--make-request (format "%s\n\n" question) "detail"))
 
+;;;###autoload
 (defun +ask-chatgpt-with-mode (question)
-  "Ask ChatGPT a question with the current mode as context.
+  "Ask ChatGPT a QUESTION with the current mode as context.
 
   Putt the response in the current buffer"
   (interactive "squestion>")
   (let* ((editor-mode (string-join (split-string (symbol-name major-mode) "-") " "))
-         (prompt (format ("%s\nUser is in %s. Only include the code.\n\n"))))
+         (prompt (format ("%s\nUser is in %s. Only include the code.\n\n" question editor-mode))))
     (+chatgpt--make-request prompt "quick")))
 
+;;;###autoload
 (defun +chatgpt-explain-region (beginning end)
   "Ask ChatGPT to explain this region of code from BEGINNING to END."
   (interactive "r")
-  (let* ((code (buffer-substring-no-properties (region-beginning) (region-end)))
+  (let* ((code (buffer-substring-no-properties beginning end))
          (mode-sp (split-string (symbol-name major-mode) "-"))
          (editor-mode (string-join mode-sp " "))
          (prompt
