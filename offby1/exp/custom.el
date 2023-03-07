@@ -1,2 +1,2 @@
 (when (modulep! +chatgpt)
-  (load! '+chatgpt))
+  (load! "+chatgpt"))
