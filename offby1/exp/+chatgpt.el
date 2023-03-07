@@ -38,6 +38,22 @@
    (mapcar (lambda (p) `(("role" . "system") ("content" . ,p))) +chatgpt-base-prompt)
    `((("role" . "user") ("content" . ,question)))))
 
+(defun +chatgpt--get-api-token (&optional username)
+  "Retrieve or set a secret in the macOS Keychain for the given service and username.
+
+By default this will use the server api.openai.com and <username>-token as the username"
+  (let* ((server "api.openai.com")
+         (auth-username (or username (format "%s-token" (user-login-name))))
+         (auth-info (nth 0 (auth-source-search :max 1
+                                                :host server
+                                                :user auth-username))))
+    (when auth-info
+      (let ((saved-secret (plist-get auth-info :secret)))
+        (if (functionp saved-secret)
+            (funcall saved-secret)
+          saved-secret)))))
+
+
 (defun +chatgpt--make-request (question mode)
   "Ask ChatGPT a QUESTION with the current MODE as context"
   (+chatgpt--create-answer-buffer mode)
@@ -45,7 +61,7 @@
   (point-max)
   (let* ((req `(("model" . "gpt-3.5-turbo")
                 ("messages" . ,(+chatgpt--prepare-messages question))))
-         (auth-key (+chatgpt--read-file "~/.openai-token"))
+         (auth-key (+chatgpt--get-api-token))
          (headers `(("Content-Type" . "application/json")
                     ("Authorization" . ,(format "Bearer %s" auth-key)))))
     ;; (insert (json-encode req))
