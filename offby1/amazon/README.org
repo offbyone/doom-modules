@@ -1,0 +1,21 @@
+#+TITLE: Amazon Configuration
+
+I don't work there any more, but ... might want to keep this
+
+* Components
+** BRIEF
+** rusty-xwiki
+
+Install [[https://w.amazon.com/bin/view/RustyAmazonWiki/][rusty-amazon-wiki]] thusly:
+
+#+begin_src
+toolbox registry add s3://buildertoolbox-registry-myr-toolbox-us-west-2/tools.json
+toolbox install rusty-amazon-wiki
+#+end_src
+
+** Brazil-Config LSP Mode (barium)
+
+** ION Mode
+
+Configure ion-mode and smartparens. Having some kind of indent support in curly
+braces is slick.
