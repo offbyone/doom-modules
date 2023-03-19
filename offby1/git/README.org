@@ -1,0 +1,18 @@
+#+TITLE: Git Features
+
+* Features
+** magit-delta (failed experiment)
+Mostly I leave magit alone, but right now I'm trying out magit-delta to see if I
+like the diffing.
+
+On further experimentation, I think this is hampering performance when delta-ing nodejs projects, specifically when =package-lock.json= is being updated. Disabling
+
+** git-auto-commit-mode
+
+Mostly left alone, but Git autocommit suuuucks when there are pre-commit hooks. So, nope!
+
+** browse-at-remote
+
+=browse-at-url= uses hashes by default, which is great if you want those, but I
+really prefer symbolic most of the time. Doom lets me flip those with a prefix
+arg to =+vc/browse-at-remote= so all I need to do is set it my way here.
