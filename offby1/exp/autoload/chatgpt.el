@@ -96,7 +96,7 @@ By default this will use the server api.openai.com and <username>-token as the u
   Putt the response in the current buffer"
   (interactive "squestion>")
   (let* ((editor-mode (string-join (split-string (symbol-name major-mode) "-") " "))
-         (prompt (format ("%s\nUser is in %s. Only include the code.\n\n" question editor-mode))))
+         (prompt (format "%s\nUser is in %s. Only include the code.\n\n" question editor-mode)))
     (+chatgpt--make-request prompt "quick")))
 
 ;;;###autoload
