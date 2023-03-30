@@ -7,53 +7,54 @@
 
 ;;; Reconfigure format-all with rubocop
 
-(after! format-all
-  (remhash 'ruby-mode format-all--mode-table)
-  (remhash 'enh-ruby-mode format-all--mode-table)
-
-  ;;; The following two functions are copied wholesale from the more modern
-  ;;; format-all-the-code library, which has evolved far past the one in the
-  ;;; doom distro
-  (defun +offby1/format-all--ruby-gem-bundled-p (gem-name)
-    "Internal helper function to check for a Ruby gem.
+;;; The following two functions are copied wholesale from the more modern
+;;; format-all-the-code library, which has evolved far past the one in the
+;;; doom distro
+(defun +offby1/format-all--ruby-gem-bundled-p (gem-name)
+  "Internal helper function to check for a Ruby gem.
 Returns t if GEM-NAME is listed in the current project's
 Gemfile.lock, nil otherwise."
-    (let* ((lockfile "Gemfile.lock")
-           (dir (locate-dominating-file (buffer-file-name) lockfile)))
-      (and dir
-           (with-temp-buffer
-             (insert-file-contents (expand-file-name lockfile dir))
-             (re-search-forward (format "^    %s " (regexp-quote gem-name))
-                                nil t))
-           t)))
+  (let* ((lockfile "Gemfile.lock")
+         (dir (locate-dominating-file (buffer-file-name) lockfile)))
+    (and dir
+         (with-temp-buffer
+           (insert-file-contents (expand-file-name lockfile dir))
+           (re-search-forward (format "^    %s " (regexp-quote gem-name))
+                              nil t))
+         t)))
 
-  (defun +offby1/format-all--buffer-hard-ruby
-      (gem-name ok-statuses error-regexp root-files executable &rest args)
-    "Internal helper function to implement ruby based formatters.
+(defun +offby1/format-all--buffer-hard-ruby
+    (gem-name ok-statuses error-regexp root-files executable &rest args)
+  "Internal helper function to implement ruby based formatters.
 GEM-NAME is the name of a Ruby gem required to run EXECUTABLE.
 For OK-STATUSES, ERROR-REGEXP, ROOT-FILES, EXECUTABLE and ARGS,
 see `format-all--buffer-hard'."
-    (let* ((command (file-name-nondirectory executable))
-           (error-regexp
-            (regexp-opt
-             (append
-              (if error-regexp (list error-regexp))
-              (list
-               "Bundler::GemNotFound"
-               (concat "bundler: failed to load command: "
-                       (regexp-quote command))
-               (concat (regexp-opt (list "bundle" (regexp-quote command)))
-                       ": command not found")))))
-           (command-args
-            (append
-             (if (+offby1/format-all--ruby-gem-bundled-p gem-name)
-                 (list "bundle" "exec" command)
-               (list executable))
-             (format-all--flatten-once args))))
-      (format-all--buffer-hard
-       ok-statuses error-regexp root-files
-       (car command-args)
-       (cdr command-args))))
+  (let* ((command (file-name-nondirectory executable))
+         (error-regexp
+          (regexp-opt
+           (append
+            (if error-regexp (list error-regexp))
+            (list
+             "Bundler::GemNotFound"
+             (concat "bundler: failed to load command: "
+                     (regexp-quote command))
+             (concat (regexp-opt (list "bundle" (regexp-quote command)))
+                     ": command not found")))))
+         (command-args
+          (append
+           (if (+offby1/format-all--ruby-gem-bundled-p gem-name)
+               (list "bundle" "exec" command)
+             (list executable))
+           (format-all--flatten-once args))))
+    (format-all--buffer-hard
+     ok-statuses error-regexp root-files
+     (car command-args)
+     (cdr command-args))))
+
+
+(after! format-all
+  (remhash 'ruby-mode format-all--mode-table)
+  (remhash 'enh-ruby-mode format-all--mode-table)
 
   (define-format-all-formatter rubocop
                                (:executable "rubocop")
@@ -63,7 +64,7 @@ see `format-all--buffer-hard'."
                                 (+offby1/format-all--buffer-hard-ruby
                                  "rubocop" '(0 1) nil nil
                                  executable
-                                 "--auto-correct"
+                                 "--autocorrect"
                                  "--format" "quiet"
                                  "--stderr"
                                  "--stdin" (or (buffer-file-name) (buffer-name))))))
