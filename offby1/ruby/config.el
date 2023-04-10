@@ -65,6 +65,6 @@ see `format-all--buffer-hard'."
                                  "rubocop" '(0 1) nil nil
                                  executable
                                  "--autocorrect"
-                                 "--format" "quiet"
+                                 "--format" "emacs"
                                  "--stderr"
                                  "--stdin" (or (buffer-file-name) (buffer-name))))))
