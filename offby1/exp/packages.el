@@ -1,4 +1,5 @@
 (when (modulep! +chatgpt)
+  (package! shell-maker :recipe (:type git :host github :repo "xenodium/chatgpt-shell"))
   (package! chatgpt-shell :recipe (:type git :host github :repo "xenodium/chatgpt-shell"))
   (package! markdown-mode)
   (package! request))
