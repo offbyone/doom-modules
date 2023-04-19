@@ -23,3 +23,7 @@
          :desc "Find file into window"  "o" (offby1/embark-ace-action find-file)))
   (map! (:map embark-buffer-map
          :desc "Switch to buffer in window"  "o" (offby1/embark-ace-action switch-to-buffer))))
+
+(use-package! nyan-mode
+  :if (modulep! +nyan)
+  :init (nyan-mode 1))
