@@ -1,0 +1,3 @@
+#+TITLE: My own Modules
+
+Being a collection of the things that I use to customize my Doom, where I don't want to go through the hassle of chezmoi
