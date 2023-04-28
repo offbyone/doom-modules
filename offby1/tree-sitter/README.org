@@ -1,0 +1,3 @@
+#+TITLE: Tree-Sitter configuration
+
+* TODO figure out why this keeps injecting python-ts-mode despite not configuring it that way
