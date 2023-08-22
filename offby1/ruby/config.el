@@ -23,6 +23,23 @@ Gemfile.lock, nil otherwise."
                               nil t))
          t)))
 
+(defun +offby1/remove-matching-lines (regex-list string)
+  (with-temp-buffer
+    (insert string)
+    (flush-lines "^\\s-*$" (point-min) (point-max))
+    (flush-lines (regexp-opt regex-list) (point-min) (point-max))
+    (unless (= (point-min) (point-max))
+      (buffer-string))))
+
+(defun +offby1/format-all--buffer-thunk-with-cleanup (fn &rest args)
+  "wrap format-all-buffer-hard with line filters, and return stderr as nil if it ends up empty"
+  (cl-destructuring-bind (output errput) (apply fn args)
+    (let ((errout (+offby1/remove-matching-lines '("====================") errput)))
+      (message (format "errout: %s" errout))
+      (message (format "errput: %s" errput))
+      (list output errout))))
+
+
 (defun +offby1/format-all--buffer-hard-ruby
     (gem-name ok-statuses error-regexp root-files executable &rest args)
   "Internal helper function to implement ruby based formatters.
@@ -55,6 +72,10 @@ see `format-all--buffer-hard'."
 (after! format-all
   (remhash 'ruby-mode format-all--mode-table)
   (remhash 'enh-ruby-mode format-all--mode-table)
+
+  ; rubocop _insists_ on dumping "====================" into the stderr. I don't know why.
+  ; anyway, this lets me clean that shit up when it's the only thing.
+  (advice-add #'format-all--buffer-thunk :around #'+offby1/format-all--buffer-thunk-with-cleanup)
 
   (define-format-all-formatter rubocop
                                (:executable "rubocop")
