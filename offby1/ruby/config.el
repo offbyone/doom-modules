@@ -87,5 +87,6 @@ see `format-all--buffer-hard'."
                                  executable
                                  "--autocorrect"
                                  "--format" "emacs"
+                                 "--display-only-fail-level-offenses"
                                  "--stderr"
                                  "--stdin" (or (buffer-file-name) (buffer-name))))))
