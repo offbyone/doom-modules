@@ -34,7 +34,7 @@ Gemfile.lock, nil otherwise."
 (defun +offby1/format-all--buffer-thunk-with-cleanup (fn &rest args)
   "wrap format-all-buffer-hard with line filters, and return stderr as nil if it ends up empty"
   (cl-destructuring-bind (output errput) (apply fn args)
-    (let ((errout (+offby1/remove-matching-lines '("====================") errput)))
+    (let ((errout (+offby1/remove-matching-lines '("====================" "C: [Corrected]") errput)))
       (message (format "errout: %s" errout))
       (message (format "errput: %s" errput))
       (list output errout))))
@@ -87,6 +87,5 @@ see `format-all--buffer-hard'."
                                  executable
                                  "--autocorrect"
                                  "--format" "emacs"
-                                 "--display-only-fail-level-offenses"
                                  "--stderr"
                                  "--stdin" (or (buffer-file-name) (buffer-name))))))
