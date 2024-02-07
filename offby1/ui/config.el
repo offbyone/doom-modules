@@ -27,3 +27,7 @@
 (use-package! nyan-mode
   :if (modulep! +nyan)
   :init (nyan-mode 1))
+
+(use-package! org-margin
+  :if (modulep! +org-margin)
+  :init (org-margin-mode 1))
