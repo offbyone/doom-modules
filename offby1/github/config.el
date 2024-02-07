@@ -13,15 +13,17 @@
 
 (put '+offby1/project-disable-formatting 'safe-local-variable 'booleanp)
 
-(defadvice! +offby1/projectile-configure-formatting-fabfh (fn)
-  :around #'format-all-buffer--from-hook
-  (when (or (not (boundp '+offby1/project-disable-formatting)) (not +offby1/project-disable-formatting))
-    (funcall fn)))
+(defun +offby1/formatting-enabled-for-project-p ()
+  (or (not (boundp '+offby1/project-disable-formatting))
+      (not +offby1/project-disable-formatting)))
 
-(defadvice! +offby1/projectile-configure-formatting-f/b (fn)
+(defadvice! +offby1/projectile-configure-formatting-fabfh (fn &rest args)
+  :around #'format-all-buffer--from-hook
+  (if (+offby1/formatting-enabled-for-project-p) (apply fn args)))
+
+(defadvice! +offby1/projectile-configure-formatting-f/b (fn &rest args)
   :around #'+format/buffer
-  (when (or (not (boundp '+offby1/project-disable-formatting)) (not +offby1/project-disable-formatting))
-    (funcall fn)))
+  (if (+offby1/formatting-enabled-for-project-p) (apply fn args)))
 
 (use-package! copilot
   :when (modulep! +copilot)
