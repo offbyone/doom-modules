@@ -1,0 +1,7 @@
+(progn
+  (set-face-attribute 'mode-line nil :background "<%= bgcolor %>" :foreground "<%= color %>")
+  (message "Guard notification: <%= message %>")
+
+  (run-at-time "5" nil (lambda ()
+                         (message "Guard: resetting to the standard mode-line faces")
+                         (doom/reload-theme))))
