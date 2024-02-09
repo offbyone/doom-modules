@@ -37,4 +37,4 @@
   ;; this warning is nearly always unhelpful, so let's remove it.
   (setq copilot-indent-offset-warning-disable t)
   ;; having copilot popping up constantly is annoying, so let's make it wait a bit.
-  (setq copilot-idle-delay 100))
+  (setq copilot-idle-delay 0.1))
