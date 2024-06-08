@@ -31,3 +31,8 @@
 (use-package! org-margin
   :if (modulep! +org-margin)
   :init (org-margin-mode 1))
+
+;; Spare me the zoomies
+(global-set-key (kbd "<pinch>") 'ignore)
+(global-set-key (kbd "<C-wheel-up>") 'ignore)
+(global-set-key (kbd "<C-wheel-down>") 'ignore)
