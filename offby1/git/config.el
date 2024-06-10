@@ -22,3 +22,11 @@
 
   ;; set the default folder for cloning repositories, By default Consult-GH will confirm this before cloning
   (setq consult-gh-default-clone-directory "~/projects"))
+
+(defun offby1/disable-magit-refresh ()
+  (when (file-remote-p buffer-file-name)
+    (make-local-variable 'magit--disable-save-buffers)
+    (setq magit--disable-save-buffers t)))
+
+(after! magit
+  (add-hook 'find-file-hook #'offby1/disable-magit-refresh))
