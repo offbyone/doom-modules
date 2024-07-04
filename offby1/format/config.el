@@ -5,5 +5,3 @@
 ;; Author: Chris Rose <offbyone@github.com>
 ;; Keywords: languages,
 
-(after! (format-all inheritenv)
-  (inheritenv-add-advice 'format-all--buffer-thunk))
