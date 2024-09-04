@@ -89,3 +89,25 @@ see `format-all--buffer-hard'."
                                  "--format" "emacs"
                                  "--stderr"
                                  "--stdin" (or (buffer-file-name) (buffer-name))))))
+
+(defun offby1/project-gemfile (gems &optional gemfile)
+  "Check if specific GEMS are present in the Gemfile. IfGEMFILE is not provided, locate the Gemfile in the project root."
+  (let ((gemfile (or gemfile (expand-file-name "Gemfile" (doom-project-root))))
+        (found-gems nil))
+    (when (file-exists-p gemfile)
+      (with-temp-buffer
+        (insert-file-contents gemfile)
+        (dolist (gem (if (listp gems) gems (list gems)))
+          (goto-char (point-min))  ; Reset point to beginning of bufferfor each gem
+          (when (re-search-forward (format "gem ['\"]%s['\"]" gem) nil t)
+            (push gem found-gems))))
+      (nreverse found-gems))))
+
+(defun offby1/lsp-sorbet-enabled-for-project (file-name major-mode)
+  (and (funcall (lsp-activate-on "ruby") file-name major-mode)
+       (offby1/project-gemfile '("sorbet-runtime" "sorbet-typed" "sorbet-sig" "sorbet-static" "sorbet" "sorbet-static-and-runtime"))))
+
+(when (and (modulep! :tools lsp) (not (modulep! :tools lsp +eglot)))
+  (after! lsp-sorbet
+    (setf (lsp--client-activation-fn (ht-get lsp-clients 'sorbet-ls))
+          #'offby1/lsp-sorbet-enabled-for-project)))
