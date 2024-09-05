@@ -73,8 +73,8 @@ see `format-all--buffer-hard'."
   (remhash 'ruby-mode format-all--mode-table)
   (remhash 'enh-ruby-mode format-all--mode-table)
 
-  ; rubocop _insists_ on dumping "====================" into the stderr. I don't know why.
-  ; anyway, this lets me clean that shit up when it's the only thing.
+                                        ; rubocop _insists_ on dumping "====================" into the stderr. I don't know why.
+                                        ; anyway, this lets me clean that shit up when it's the only thing.
   (advice-add #'format-all--buffer-thunk :around #'+offby1/format-all--buffer-thunk-with-cleanup)
 
   (define-format-all-formatter rubocop
@@ -107,7 +107,8 @@ see `format-all--buffer-hard'."
   (and (funcall (lsp-activate-on "ruby") file-name major-mode)
        (offby1/project-gemfile '("sorbet-runtime" "sorbet-typed" "sorbet-sig" "sorbet-static" "sorbet" "sorbet-static-and-runtime"))))
 
-(when (and (modulep! :tools lsp) (not (modulep! :tools lsp +eglot)))
-  (after! lsp-sorbet
-    (setf (lsp--client-activation-fn (ht-get lsp-clients 'sorbet-ls))
-          #'offby1/lsp-sorbet-enabled-for-project)))
+(defun offby1//lsp--configure ()
+  (eval '(setf (lsp--client-activation-fn (ht-get lsp-clients 'sorbet-ls))
+               #'offby1/lsp-sorbet-enabled-for-project)))
+
+(after! (lsp-sorbet lsp-mode) (offby1//lsp--configure))
