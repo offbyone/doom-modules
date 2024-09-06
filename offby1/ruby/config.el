@@ -107,8 +107,4 @@ see `format-all--buffer-hard'."
   (and (funcall (lsp-activate-on "ruby") file-name major-mode)
        (offby1/project-gemfile '("sorbet-runtime" "sorbet-typed" "sorbet-sig" "sorbet-static" "sorbet" "sorbet-static-and-runtime"))))
 
-(defun offby1//lsp--configure ()
-  (eval '(setf (lsp--client-activation-fn (ht-get lsp-clients 'sorbet-ls))
-               #'offby1/lsp-sorbet-enabled-for-project)))
-
 (after! (lsp-sorbet lsp-mode) (offby1//lsp--configure))
