@@ -108,3 +108,5 @@ see `format-all--buffer-hard'."
        (offby1/project-gemfile '("sorbet-runtime" "sorbet-typed" "sorbet-sig" "sorbet-static" "sorbet" "sorbet-static-and-runtime"))))
 
 (after! (lsp-sorbet lsp-mode) (offby1//lsp--configure))
+
+(add-to-list 'auto-mode-alist '("\\.gem\\'" . tar-mode))
