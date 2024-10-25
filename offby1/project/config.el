@@ -12,3 +12,6 @@
 (after! (conner projectile)
   ;; rebind ! to conner in projectile-command-map
   (define-key projectile-command-map "!" #'offby1/run-project-command))
+
+(use-package! dwim-shell-command
+  :when (modulep! +dwim))
