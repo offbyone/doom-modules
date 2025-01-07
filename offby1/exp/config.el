@@ -2,7 +2,9 @@
   :if (modulep! +chatgpt)
   :config
   (setq dall-e-shell-openai-key (lambda () (auth-source-pick-first-password :host "api.openai.com")))
-  (setq chatgpt-shell-openai-key (lambda () (auth-source-pick-first-password :host "api.openai.com"))))
+  (setq chatgpt-shell-openai-key (lambda () (auth-source-pick-first-password :host "api.openai.com")))
+
+  (add-to-list 'doom-detect-indentation-excluded-modes 'chatgpt-shell-mode))
 
 (use-package! ob-chatgpt-shell
   :if (modulep! +ob-chatgpt)
