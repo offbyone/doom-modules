@@ -38,3 +38,7 @@
   (setq copilot-indent-offset-warning-disable t)
   ;; having copilot popping up constantly is annoying, so let's make it wait a bit.
   (setq copilot-idle-delay 0.1))
+
+;;; copilot warnings on long files are actually really unhelpful
+(add-to-list 'warning-suppress-types
+             '(copilot copilot-exceeds-max-char))
