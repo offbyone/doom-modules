@@ -1,5 +1,0 @@
-#+title: D2 graphs
-
-* Packages
-
-* Config
