@@ -42,3 +42,13 @@
 ;;; copilot warnings on long files are actually really unhelpful
 (add-to-list 'warning-suppress-types
              '(copilot copilot-exceeds-max-char))
+
+(use-package! copilot-chat
+  :when (modulep! +copilot)
+  :bind (:map global-map
+              ("C-c C-y" . copilot-chat-yank)
+              ("C-c M-y" . copilot-chat-yank-pop)
+              ("C-c C-M-y" . (lambda () (interactive) (copilot-chat-yank-pop -1))))
+  :config
+  (setq copilot-chat-backend 'curl
+        copilot-chat-frontend 'markdown))
