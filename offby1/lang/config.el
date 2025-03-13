@@ -8,3 +8,8 @@
   (map! :n "c" 'justl-exec-recipe))
 
 (use-package! caddyfile-mode)
+
+;; huJSON support
+(use-package! json-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.hujson\\'" . json-mode)))
