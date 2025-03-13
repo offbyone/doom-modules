@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: uv script
+# uuid: 66053345-837a-4bc8-82b2-10ad4800542c
+# key: uvs
+# condition: t
+# --
+#!/usr/bin/env uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#   $1
+# ]
+# ///
+$0
