@@ -50,5 +50,11 @@
               ("C-c M-y" . copilot-chat-yank-pop)
               ("C-c C-M-y" . (lambda () (interactive) (copilot-chat-yank-pop -1))))
   :config
+  ;; because of the way that copilot-chat loads frontends -- ie, via customize hooks -- we need
+  ;; to load its dependencies explicitly here.
+  (require 'copilot-chat-org)
+  (require 'copilot-chat-markdown)
+  (require 'copilot-chat-shell-maker)
+
   (setq copilot-chat-backend 'curl
-        copilot-chat-frontend 'markdown))
+        copilot-chat-frontend 'shell-maker))
