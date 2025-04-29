@@ -13,3 +13,8 @@
 (use-package! json-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.hujson\\'" . json-mode)))
+
+(if (modulep! +go-template)
+    (load! "go/go-template-mode.el" nil t)
+  (use-package! go-template-mode
+    :mode ("\\.tmpl\\'" . go-template-mode)))
