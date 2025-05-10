@@ -11,3 +11,9 @@
   :if (modulep! +ob-chatgpt)
   :config
   (ob-chatgpt-shell-setup))
+
+(use-package! gptel
+  :if (modulep! :tools llm)
+  :config
+  (setq gptel-model 'claude-3.7-sonnet
+        gptel-backend (gptel-make-gh-copilot "Copilot")))
