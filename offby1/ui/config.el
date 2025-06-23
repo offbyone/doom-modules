@@ -51,3 +51,6 @@
 (global-set-key (kbd "<pinch>") 'ignore)
 (global-set-key (kbd "<C-wheel-up>") 'ignore)
 (global-set-key (kbd "<C-wheel-down>") 'ignore)
+
+(after! embark
+  (setq embark-cycle-key "C-;"))
