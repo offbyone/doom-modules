@@ -6,3 +6,6 @@
 
 (when (modulep! +popper)
   (package! popper  :recipe (:type git :host github :repo "karthink/popper")))
+
+(when (modulep! +rainbow)
+  (package! rainbow-delimiters))

@@ -54,3 +54,15 @@
 
 (after! embark
   (setq embark-cycle-key "C-;"))
+
+(when (modulep! +rainbow)
+  (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode) ; for a specific major mode
+
+  ;; (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)       ; for a group of major modes
+
+  ;; ;; Or enable it in *most* places:
+  ;; (add-hook! '(prog-mode-hook
+  ;;              text-mode-hook
+  ;;              conf-mode-hook)
+  ;;            #'rainbow-delimiters-mode)
+  )
