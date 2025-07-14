@@ -63,14 +63,19 @@
   ;; Enable dig-my-grave for easy source blocks
   (add-hook 'org-mode-hook (lambda () (dig-my-grave-mode 1)))
 
-  ;; set up work log org templates
-  (cl-pushnew '("l" "Work log entry"
+  ;; set up work log org templates. Override any existing ones.
+  (setq org-capture-templates
+        (cl-remove-if (lambda (template)
+                        (member (car template) '("c" "u" "l")))
+                      org-capture-templates))
+
+  (cl-pushnew `("l" "Work log entry"
                 entry (file+datetree ,(function offby1/get-work-log-target))
                 "* %?"
                 :empty-lines 0)
               org-capture-templates
               :key #'car :test #'equal)
-  (cl-pushnew '("c" "On-Call Work log entry"
+  (cl-pushnew `("c" "On-Call Work log entry"
                 entry (file+datetree ,(function offby1/get-work-log-target))
                 "* Triage %?"
                 :empty-lines 0)
