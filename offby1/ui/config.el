@@ -67,6 +67,9 @@
   ;;            #'rainbow-delimiters-mode)
   )
 
+(use-package! string-inflection
+  :defer t)
+
 (map! :leader
       (:prefix "t"
                (:prefix ("s" . "string inflection")

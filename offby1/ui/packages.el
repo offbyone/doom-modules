@@ -9,3 +9,5 @@
 
 (when (modulep! +rainbow)
   (package! rainbow-delimiters))
+
+(package! string-inflection)
