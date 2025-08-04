@@ -66,3 +66,21 @@
   ;;              conf-mode-hook)
   ;;            #'rainbow-delimiters-mode)
   )
+
+(map! :leader
+      (:prefix "t"
+               (:prefix ("s" . "string inflection")
+                :desc "Camelize"   "c" #'string-inflection-lower-camel-case
+                :desc "Capitalize" "C" #'string-inflection-camel-case
+                :desc "Downcase"   "d" #'string-inflection-downcase
+                :desc "Upcase"     "u" #'string-inflection-upcase
+                :desc "Snake case" "s" #'string-inflection-snake-case)))
+
+(map! :map prog-mode-map
+      :localleader
+      (:prefix ("s" . "string inflection")
+       :desc "Camelize"   "c" #'string-inflection-lower-camel-case
+       :desc "Capitalize" "C" #'string-inflection-camel-case
+       :desc "Downcase"   "d" #'string-inflection-downcase
+       :desc "Upcase"     "u" #'string-inflection-upcase
+       :desc "Snake case" "s" #'string-inflection-snake-case))
