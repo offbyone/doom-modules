@@ -87,3 +87,15 @@
        :desc "Downcase"   "d" #'string-inflection-downcase
        :desc "Upcase"     "u" #'string-inflection-upcase
        :desc "Snake case" "s" #'string-inflection-snake-case))
+
+(defun offby1/current-timestamp ()
+  "Return the current timestamp in the format: 'Modified: 2025-07-29T08:15:57.000000'"
+  (concat (format-time-string "%Y-%m-%dT%H:%M:%S" (current-time))
+          ".000000"))
+
+(defun offby1/insert-current-timestamp ()
+  "Insert the current timestamp in the desired format."
+  (interactive)
+  (insert (offby1/current-timestamp)))
+
+(map! :leader "t t" #'offby1/insert-current-timestamp)
