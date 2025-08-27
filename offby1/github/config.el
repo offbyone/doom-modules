@@ -57,4 +57,4 @@
   (require 'copilot-chat-shell-maker)
 
   (setq copilot-chat-backend 'curl
-        copilot-chat-frontend 'shell-maker))
+        copilot-chat-frontend 'org))
