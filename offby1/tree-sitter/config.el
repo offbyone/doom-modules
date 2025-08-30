@@ -21,20 +21,3 @@
     (add-to-list 'major-mode-remap-alist mapping))
   :config
   (offby1/setup-install-grammars))
-
-;; (python-mode . python-ts-mode)
-;; (ruby-mode . ruby-ts-mode)
-;; (css-mode . css-ts-mode)
-;; (typescript-mode . js-ts-mode)
-;; (js-mode . js-ts-mode)
-;; (css-mode . css-ts-mode)
-;; (yaml-mode . yaml-ts-mode)
-
-(after! (treesit lsp)
-  (add-to-list 'lsp-language-id-configuration '(python-ts-mode . "python"))
-  (add-to-list 'lsp-language-id-configuration '(ruby-ts-mode . "ruby"))
-  (add-to-list 'lsp-language-id-configuration '(js-ts-mode . "typescript"))
-  (add-to-list 'lsp-language-id-configuration '(css-ts-mode . "css"))
-  (add-to-list 'lsp-language-id-configuration '(js-ts-mode . "javascript"))
-  (add-to-list 'lsp-language-id-configuration '(yaml-tsmode . "yaml"))
-  (add-to-list 'lsp-language-id-configuration '(toml-ts-mode . "toml")))
