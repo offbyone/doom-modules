@@ -17,3 +17,11 @@
   :config
   (setq gptel-model 'claude-3.7-sonnet
         gptel-backend (gptel-make-gh-copilot "Copilot")))
+
+(use-package! elisp-dev-mcp
+  :if (modulep! +mcp))
+
+(after! (elisp-dev-mcp straight)
+  (setq elisp-dev-mcp-additional-allowed-dirs
+        (list (straight--build-dir)
+              (straight--repos-dir))))
