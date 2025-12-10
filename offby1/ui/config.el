@@ -99,3 +99,42 @@
   (insert (offby1/current-timestamp)))
 
 (map! :leader "t t" #'offby1/insert-current-timestamp)
+
+;; Equalize window sizes after splitting or closing windows
+(use-package! emacs
+  :config
+  (defadvice split-window-right (after balance-out-windows activate)
+    (balance-windows))
+  (defadvice split-window-below (after balance-out-windows activate)
+    (balance-windows))
+  (defadvice find-file-other-window (after balance-out-windows activate)
+    (balance-windows))
+  (defadvice delete-window (after balance-out-windows activate)
+    (balance-windows)))
+
+;; I'd like to have just the buffer name, then if applicable the project folder.
+;; For example when I open my config file it the window will be titled =config.org ●
+;; doom= then as soon as I make a change it will become =config.org ◉ doom=.
+(setq frame-title-format
+      '(""
+        (:eval
+         (if (s-contains-p org-roam-directory (or buffer-file-name ""))
+             (replace-regexp-in-string
+              ".*/[0-9]*-?" "☰ "
+              (subst-char-in-string ?_ ?  buffer-file-name))
+           "%b"))
+        (:eval
+         (let ((project-name (projectile-project-name)))
+           (unless (string= "-" project-name)
+             (format (if (buffer-modified-p)  " ◉ %s" "  ●  %s") project-name))))))
+
+;; The elide-head mode doesn't support the Apache code blob that is present in
+;; Wellington. Rather than always deal with that half-page of crap, I configure
+;; it here to hide it.
+(use-package! elide-head
+  :custom
+  (elide-head-headers-to-hide
+   '(("is free software[:;] you can redistribute it" . "\\(Boston, MA 0211\\(1-1307\\|0-1301\\), USA\\|If not, see <http://www\\.gnu\\.org/licenses/>\\)\\.")
+     ("The Regents of the University of California\\.  All rights reserved\\." . "SUCH DAMAGE\\.")
+     ("Permission is hereby granted, free of charge" . "authorization from the X Consortium\\.")
+     ("Licensed under the Apache License" . "limitations under the License\\."))))

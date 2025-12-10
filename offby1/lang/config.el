@@ -18,3 +18,5 @@
     (load! "go/go-template-mode.el" nil t)
   (use-package! go-template-mode
     :mode ("\\.tmpl\\'" . go-template-mode)))
+
+(cond (IS-MAC (use-package! osx-plist)))
