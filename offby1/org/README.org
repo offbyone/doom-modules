@@ -1,5 +1,124 @@
-#+TITLE: org-mode tweaks
+#+TITLE: Org-mode Tweaks
+#+DATE: December 25, 2025
 
-* dig-my-grave
+Custom org-mode enhancements and capture templates.
+
+* Description
+This module provides custom org-mode features including:
+- Quick source block insertion with dig-my-grave
+- Work log capture templates
+- URL capture from Chrome
+- Link parsing utilities
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#features][Features]]
+- [[#installation][Installation]]
+- [[#usage][Usage]]
+- [[#configuration][Configuration]]
+
+* Features
+** Dig My Grave Mode
+A clever source block insertion system triggered by three backticks (```).
 
 Stolen shamelessly from https://takeonrules.com/2023/04/09/dig-my-grave-leveraging-the-triple-back-tick-in-org-mode/
+
+Type ``` at the start of a line to get a menu of insertable content:
+- Bash source blocks
+- Emacs Lisp blocks
+- Package definition blocks (for =packages.el=)
+- PlantUML diagrams
+- Ruby blocks
+- Details/Summary blocks
+- General org structure templates
+
+After selection, automatically opens the block in =org-edit-special= for editing.
+
+** Work Log Capture Templates
+Three specialized capture templates:
+
+*** "l" - Work log entry
+Captures to a work log file with datetree organization.
+Simple timestamped entry.
+
+*** "c" - On-Call Work log entry  
+Same as work log but prefixed with "Triage" for on-call work.
+
+*** "u" - URL capture from Chrome
+Captures the current Chrome tab with:
+- Page title as heading
+- Tagged with =:chrome:url:=
+- Timestamp
+- Full URL in body
+
+Requires =org-mac-link= for Chrome integration.
+
+** Link Utilities
+Helper functions for parsing org-mode links:
+- =offby1/org-link-url= - Extract URL from org link
+- =offby1/org-link-title= - Extract title from org link
+
+Useful for custom capture templates and link processing.
+
+* Installation
+Enable the module in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       org)
+#+end_src
+
+Requires =:lang org= to be enabled.
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+** Additional Setup
+Define =offby1/get-work-log-target= function to specify your work log location:
+
+#+begin_src emacs-lisp
+(defun offby1/get-work-log-target ()
+  "~/work/log.org")
+#+end_src
+
+* Usage
+** Dig My Grave
+1. In an org buffer, type ``` at the start of a line
+2. Select content type from the menu
+3. Block is inserted and opened for editing
+4. =C-c '= to close the edit buffer
+
+** Work Log Captures
+#+begin_example
+SPC X l    ; Capture work log entry
+SPC X c    ; Capture on-call triage entry
+SPC X u    ; Capture current Chrome URL
+#+end_example
+
+** Chrome URL Capture
+1. Switch to Chrome and navigate to desired page
+2. =SPC X u= in Emacs
+3. Entry is captured to =~/Dropbox/Notes/org/urls.org=
+
+* Configuration
+** Customize Dig-My-Grave Templates
+Add your own template types:
+
+#+begin_src emacs-lisp
+(after! org
+  (add-to-list 'dig-my-grave/templates-alist/org-mode
+               '("Python" . "#+begin_src python\n#+end_src")))
+#+end_src
+
+** Customize Capture Templates
+Modify or add new capture templates:
+
+#+begin_src emacs-lisp
+(after! org
+  (add-to-list 'org-capture-templates
+               '("m" "Meeting notes"
+                 entry (file+datetree "~/org/meetings.org")
+                 "* %?\n%U\n")))
+#+end_src

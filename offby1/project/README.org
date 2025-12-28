@@ -1,0 +1,81 @@
+#+TITLE: Project Module
+#+DATE: December 25, 2025
+
+Project command runner and shell utilities.
+
+* Description
+This module enhances project-based workflows with specialized command runners and
+shell utilities for executing project-specific tasks.
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#module-flags][Module Flags]]
+- [[#features][Features]]
+- [[#installation][Installation]]
+- [[#usage][Usage]]
+
+* Module Flags
+- =+conner= :: Enable Conner project command runner
+- =+dwim= :: Enable DWIM (Do What I Mean) shell commands
+
+* Features
+** Conner Integration
+When =+conner= is enabled, provides intelligent project command running through Conner.
+
+*** Smart Command Dispatch
+The module rebinds =SPC p != (projectile compile) to intelligently choose between:
+- Without prefix: =conner-run-project-command= (structured command menu)
+- With prefix (=C-u=): =projectile-compile-project= (traditional compile command)
+
+This gives you quick access to project-specific commands while retaining the ability
+to run arbitrary shell commands when needed.
+
+** DWIM Shell Commands
+When =+dwim= is enabled, provides =dwim-shell-command= for smart, template-based shell commands.
+
+* Installation
+Enable the module with desired flags in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       (project +conner +dwim))
+#+end_src
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+* Usage
+** Conner Commands
+With =+conner= enabled:
+
+#+begin_example
+SPC p !      ; Run Conner project command (menu-based)
+C-u SPC p !  ; Run arbitrary shell command (traditional)
+#+end_example
+
+Conner will present a menu of project-specific commands defined in your project
+configuration (e.g., =.conner.yaml= or similar).
+
+** DWIM Shell Commands
+With =+dwim= enabled:
+
+#+begin_example
+M-x dwim-shell-command
+#+end_example
+
+Execute context-aware shell commands with templates.
+
+* Configuration
+** Conner Project Commands
+Configure project commands in your project root. Example =.conner.yaml=:
+
+#+begin_src yaml
+commands:
+  test: npm test
+  build: npm run build
+  lint: npm run lint
+#+end_src
+
+(Exact configuration format depends on Conner's spec)

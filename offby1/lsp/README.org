@@ -1,0 +1,68 @@
+#+TITLE: LSP Module
+#+DATE: December 25, 2025
+
+Enhanced LSP/Eglot configuration and extensions.
+
+* Description
+This module extends Doom's LSP support with additional features and conveniences
+for both =lsp-mode= and =eglot= backends.
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#features][Features]]
+- [[#installation][Installation]]
+- [[#usage][Usage]]
+
+* Features
+** Inlay Hints Toggle
+Adds a conditional keybinding for toggling inlay hints when the LSP server supports them.
+
+Keybinding: =SPC c l Ti= (in lsp-command-map)
+
+Only appears if the server advertises =textDocument/inlayHint= capability.
+
+** Headerline Breadcrumbs
+Automatically enables LSP headerline breadcrumbs in all programming modes when using =lsp-mode=.
+
+Shows current code context (class > method > etc.) in the header line.
+
+** Eglot Hierarchy
+When using Eglot (=:tools lsp +eglot=), adds =eglot-hierarchy= for viewing call hierarchies
+and type hierarchies.
+
+* Installation
+Enable the module in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       lsp)
+#+end_src
+
+Requires one of:
+- =:tools lsp= (for lsp-mode)
+- =:tools lsp +eglot= (for eglot)
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+* Usage
+** Inlay Hints
+With an LSP server that supports inlay hints (like rust-analyzer, gopls):
+
+#+begin_example
+SPC c l Ti    ; Toggle inlay hints on/off
+#+end_example
+
+** Breadcrumbs
+Breadcrumbs appear automatically in the header line when in a programming mode
+with LSP active. No manual activation needed.
+
+** Eglot Hierarchy
+With Eglot and =eglot-hierarchy= installed:
+
+#+begin_example
+M-x eglot-hierarchy-call-hierarchy     ; Show call hierarchy
+M-x eglot-hierarchy-type-hierarchy     ; Show type hierarchy
+#+end_example

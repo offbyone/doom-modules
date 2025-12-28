@@ -1,0 +1,131 @@
+#+TITLE: Jujutsu Module
+#+DATE: December 25, 2025
+
+Integration with the Jujutsu version control system.
+
+* Description
+This module provides Emacs integration for [[https://github.com/martinvonz/jj][Jujutsu (jj)]], a next-generation version control
+system that's compatible with Git but offers a more powerful and intuitive interface.
+
+The module adds project detection, VC backend support, and specialized editing support
+for jujutsu description files.
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#features][Features]]
+- [[#installation][Installation]]
+- [[#configuration][Configuration]]
+- [[#usage][Usage]]
+- [[#troubleshooting][Troubleshooting]]
+
+* Features
+** Project Detection
+Automatically recognizes directories with =.jj= as jujutsu-managed projects, adding
+them to Emacs' project system.
+
+** VC Backend (vc-jj)
+Provides version control integration through Emacs' built-in VC framework:
+- Status checking
+- Diff viewing
+- Log browsing
+- Commit operations
+
+** Description File Editing
+Special handling for jujutsu description files (=jjdescription=):
+- Automatic mode detection
+- Proper save-and-exit behavior with =emacsclient=
+- Integration with =log-edit-mode=
+
+** Git-Commit Integration
+Extends =git-commit-filename-regexp= to recognize jujutsu description files,
+enabling proper font-locking and commit message features.
+
+* Installation
+Enable the module in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       jujutsu)
+#+end_src
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+** Installing Jujutsu
+Install the =jj= CLI tool:
+
+#+begin_src shell
+# macOS
+brew install jj
+
+# From source (requires Rust)
+cargo install jj-cli
+#+end_src
+
+* Configuration
+The module is largely self-configuring. No additional setup required.
+
+** Customization
+The module uses a custom fork of jujutsu.el:
+
+#+begin_src emacs-lisp
+(package! jujutsu
+  :recipe (:host github :repo "offbyone/jujutsu.el"))
+#+end_src
+
+* Usage
+** Creating a Jujutsu Repository
+#+begin_src shell
+cd my-project
+jj init --git  # Create jj repo backed by git
+#+end_src
+
+Emacs will automatically detect the =.jj= directory and enable jujutsu support.
+
+** Editing Change Descriptions
+When running =jj describe= or =jj commit=, jujutsu opens the description in Emacs.
+The module ensures proper handling:
+
+1. File opens in =log-edit-mode=
+2. Write description
+3. Save with =C-x C-s=
+4. The buffer automatically closes and returns to =jj=
+
+** VC Commands
+Standard VC commands work with jujutsu:
+- =C-x v == (=vc-diff=): Show changes
+- =C-x v l= (=vc-print-log=): View history
+- =C-x v v= (=vc-next-action=): Commit/check-in
+
+* Troubleshooting
+** Jujutsushi loading error
+The module comments indicate =jujutsushi= fails to load with =(void-variable jujutsushi-dispatch)=.
+This package is included but commented out. If you want to try it:
+
+#+begin_src emacs-lisp
+(use-package! jujutsushi)
+#+end_src
+
+But expect potential issues.
+
+** Project not detected
+Verify the =.jj= directory exists:
+#+begin_src shell
+ls -la .jj
+#+end_src
+
+Restart Emacs or reload the buffer to refresh project detection.
+
+** Description file not saving
+Check that =emacsclient= is being used by jujutsu:
+#+begin_src shell
+jj config get ui.editor
+# Should show something like: emacsclient
+#+end_src
+
+Configure if needed:
+#+begin_src shell
+jj config set --user ui.editor "emacsclient"
+#+end_src

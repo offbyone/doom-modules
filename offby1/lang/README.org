@@ -1,34 +1,205 @@
-#+title: :offby1 lang
+#+TITLE: :offby1 lang
+#+DATE: December 25, 2025
+
+Language-specific modes and configuration for specialized file formats.
 
 * Description
-A grab-bag of language modes
+This module provides support for various specialized file formats and domain-specific
+languages that aren't covered by Doom's standard language modules. It includes
+configuration tools, data formats, diagram languages, and platform-specific utilities.
 
-** 1.1 Maintainers
-Me
+** Maintainers
+- [[doom-user:][@offbyone]]
 
-** 1.2 Module Flags
- ¯\_(ツ)_/¯
+** Module Flags
+- =+go-template= :: Use local go-template-mode instead of package version
+- =+openscad= :: OpenSCAD 3D modeling language support
 
 ** Packages
-- protobuf-mode
-- d2-mode
-- justl
-- just-mode
-- caddyfile-mode
+- [[doom-package:protobuf-mode][protobuf-mode]] - Protocol Buffers support
+- [[doom-package:d2-mode][d2-mode]] - D2 diagram language
+- [[doom-package:justl][justl]] - Just command runner integration
+- [[doom-package:just-mode][just-mode]] - Justfile syntax highlighting
+- [[doom-package:caddyfile-mode][caddyfile-mode]] - Caddy web server configuration
+- [[doom-package:osx-plist][osx-plist]] - macOS property list editing (macOS only)
+- [[doom-package:scad-mode][scad-mode]] - OpenSCAD 3D modeling (with =+openscad= flag)
+- [[doom-package:ob-scad][ob-scad]] - Org-babel OpenSCAD support (with =+openscad= flag)
+- go-template-mode - Go template language support
 
-** Hacks
- ¯\_(ツ)_/¯
+* Supported Languages
+** Protocol Buffers (protobuf-mode)
+Syntax highlighting and editing for =.proto= files used in Protocol Buffers.
 
-** TODO Changelog
+#+begin_example
+message Person {
+  required string name = 1;
+  required int32 id = 2;
+}
+#+end_example
 
-* TODO Installation
+** D2 Diagrams (d2-mode)
+Support for [[https://d2lang.com/][D2 declarative diagram language]].
 
-* TODO Usage
+File extension: =.d2=
 
-* TODO Configuration
+#+begin_example
+web: Web Server
+db: Database
+web -> db: Query
+#+end_example
 
-* TODO Troubleshooting
+** Justfiles (justl)
+Integration with [[https://github.com/casey/just][Just]] command runner.
 
-* TODO FAQ
+Features:
+- Execute justfile recipes from Emacs
+- Keybinding: =c= to execute recipe (in normal mode)
+- Interactive recipe selection
 
-* TODO Appendix
+** Caddyfile (caddyfile-mode)
+Syntax highlighting for [[https://caddyserver.com/][Caddy]] web server configuration files.
+
+** Go Templates (go-template-mode)
+Template support for Go's =text/template= and =html/template= packages.
+
+File extension: =.tmpl=
+
+With =+go-template= flag: Uses local implementation at =go/go-template-mode.el=
+Without flag: Uses package from MELPA
+
+** huJSON (json-mode)
+Support for "Human JSON" (huJSON) - JSON with comments and trailing commas.
+
+File extension: =.hujson=
+
+Uses standard =json-mode= with custom file association.
+
+** macOS Property Lists (osx-plist)
+macOS-only: Support for editing =.plist= files.
+
+Only loaded on macOS systems (=IS-MAC=).
+
+** OpenSCAD (scad-mode)
+Requires =+openscad= flag. Support for [[https://openscad.org/][OpenSCAD]] 3D modeling language.
+
+File extension: =.scad=
+
+Automatically detects OpenSCAD binary:
+- macOS: Uses =/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD=
+- Linux: Uses =openscad= command
+
+Includes org-babel integration via =ob-scad= for literate 3D modeling.
+
+* Installation
+Enable the module in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       lang)
+#+end_src
+
+With flags:
+#+begin_src emacs-lisp
+(doom! :offby1
+       (lang +go-template +openscad))
+#+end_src
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+** External Dependencies
+*** Just
+For justl integration:
+#+begin_src shell
+# macOS
+brew install just
+
+# From source
+cargo install just
+#+end_src
+
+*** D2
+For d2-mode diagram rendering:
+#+begin_src shell
+# macOS
+brew install d2
+
+# Go
+go install oss.terrastruct.com/d2@latest
+#+end_src
+
+*** OpenSCAD
+For scad-mode (requires =+openscad= flag):
+#+begin_src shell
+# macOS
+brew install --cask openscad
+
+# Linux
+# Distribution package manager, e.g.:
+sudo apt install openscad
+#+end_src
+
+* Usage
+** Justfiles
+Open a justfile and use =M-x justl= to see available recipes.
+
+In the justl buffer:
+- =c= - Execute recipe under cursor
+- =RET= - View recipe details
+- =g= - Refresh recipe list
+
+** D2 Diagrams
+Create a =.d2= file and edit diagrams. Use external =d2= tool to render:
+
+#+begin_src shell
+d2 diagram.d2 diagram.svg
+#+end_src
+
+** Go Templates
+Create files with =.tmpl= extension. The mode provides:
+- Syntax highlighting for ={{ }}= template syntax
+- Indentation support
+- Template action and function highlighting
+
+** huJSON
+Create =.hujson= files and use standard JSON editing:
+#+begin_example
+{
+  // This is a comment
+  "name": "value",
+  "list": [1, 2, 3,]  // trailing comma OK
+}
+#+end_example
+
+** macOS Property Lists
+On macOS, =.plist= files open with specialized editing support.
+
+** OpenSCAD
+Create =.scad= files for 3D modeling. Preview with OpenSCAD application or use org-babel:
+
+#+begin_src org
+,#+begin_src scad :file output.stl
+cube([10, 10, 10]);
+,#+end_src
+#+end_src
+
+* Configuration
+The module is largely self-configuring. File associations are set up automatically.
+
+* Troubleshooting
+** Just recipes not executing
+Verify =just= is installed:
+#+begin_src shell
+which just
+just --version
+#+end_src
+
+** D2 files not recognized
+Check file extension is =.d2=. Reopen the file if needed.
+
+* FAQ
+** Why so many language modes in one module?
+These are smaller, specialized languages that don't warrant individual modules.
+They're grouped here for convenience.

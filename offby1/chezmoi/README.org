@@ -1,12 +1,16 @@
-# -*- mode: doom-docs-org -*-
-#+title:    :tools chezmoi
-#+subtitle: Manage your dotfiles with chezmoi inside Emacs
-#+created:  May 05, 2022
-#+since:    22.05
+#+TITLE:    :tools chezmoi
+#+SUBTITLE: Manage your dotfiles with chezmoi inside Emacs
+#+CREATED:  May 05, 2022
+#+SINCE:    22.05
 
-* Description :unfold:
-This module provides convenience functions for interacting with the [[https://chezmoi.io][chezmoi]]
-dotfile management system via Emacs.
+* Description
+This module provides deep integration for the [[https://chezmoi.io][chezmoi]] dotfile management system,
+allowing you to seamlessly edit, apply, and manage your dotfiles without leaving Emacs.
+
+Chezmoi is a powerful dotfile manager that handles templating, encryption, and
+cross-platform configuration. This module brings that power directly into your Emacs workflow
+with automatic template rendering, company completion for template variables, and Evil mode
+integration.
 
 ** Maintainers
 - [[doom-user:][@offbyone]]
@@ -15,54 +19,158 @@ dotfile management system via Emacs.
 /This module has no flags./
 
 ** Packages
-- [[doom-package:][chezmoi]]
+- [[doom-package:chezmoi][chezmoi]] - Custom fork with local-only execution support
 
-** TODO Hacks
-#+begin_quote
- 🔨 This module's hacks haven't been documented yet. [[doom-contrib-module:][Document them?]]
-#+end_quote
-
-** TODO Changelog
-# This section will be machine generated. Don't edit it by hand.
-/This module does not have a changelog yet./
+** Features
+- Seamless editing of chezmoi-managed files
+- Automatic template buffer display showing rendered output
+- Company completion for chezmoi template variables (when =:completion company= is enabled)
+- Evil mode integration with intelligent template display toggling
+- Direct access to chezmoi commands from Emacs
+- Magit integration for chezmoi git operations
+- Side-by-side editing with live template preview
 
 * Installation
-[[id:01cffea4-3329-45e2-a892-95a384ab2338][Enable this module in your ~doom!~ block.]]
+Enable this module in your =doom!= block:
 
-This module requires [[https://chezmoi.io][chezmoi]].
+#+begin_src emacs-lisp
+(doom! :tools
+       chezmoi)
+#+end_src
 
-* TODO Usage
-#+begin_quote
- 🔨 /This module's usage documentation is incomplete./ [[doom-contrib-module:][Complete it?]]
-#+end_quote
+This module requires the [[https://chezmoi.io][chezmoi]] binary to be installed and available in your PATH.
+The module includes a doctor check that will warn if chezmoi is not found.
 
-This module facilitate editing dotfiles managed by ~chezmoi~.
+** Installing chezmoi
+Follow the official installation instructions at https://chezmoi.io/install/
 
-This module provides a set of Emacs commands that are equivalent to ~chezmoi~
-commands, including:
+On macOS:
+#+begin_src shell
+brew install chezmoi
+#+end_src
 
-| Command      | chezmoi equivalent |
-|--------------+--------------------|
-| find-file    | chezmoi edit       |
-| save-buffer  | chezmoi apply      |
-| diff         | chezmoi diff       |
-| ediff        | chezmoi merge      |
-| magit-status | chezmoi git status |
+On Linux:
+#+begin_src shell
+sh -c "$(curl -fsLS get.chezmoi.io)"
+#+end_src
 
-More information can be found on the [[https://github.com/tuh8888/chezmoi.el][chezmoi.el]] GitHub page.
+* Usage
+This module provides Emacs commands that mirror common chezmoi operations:
 
-* TODO Configuration
-#+begin_quote
- 🔨 This module has no configuration documentation yet. [[doom-contrib-module:][Write some?]]
-#+end_quote
+| Emacs Command                        | chezmoi equivalent | Description                          |
+|--------------------------------------+--------------------+--------------------------------------|
+| =chezmoi-find=                       | =chezmoi edit=     | Open a chezmoi-managed file          |
+| =chezmoi-write= / =save-buffer=      | =chezmoi apply=    | Apply changes to target file         |
+| =chezmoi-write-files=                | =chezmoi apply=    | Apply multiple files                 |
+| =chezmoi-diff=                       | =chezmoi diff=     | Show diff of changes                 |
+| =chezmoi-ediff=                      | =chezmoi merge=    | Merge changes with ediff             |
+| =chezmoi-magit-status=               | =chezmoi git=      | Open magit in chezmoi source dir     |
+| =chezmoi-open-other=                 | -                  | Toggle between source and target     |
+| =chezmoi-template-buffer-display=    | -                  | Toggle template preview              |
+
+** Chezmoi Mode
+When editing a chezmoi-managed file, =chezmoi-mode= is automatically enabled, providing:
+
+*** Template Preview
+A side buffer displays the rendered output of your template in real-time. This helps you
+visualize how template variables and functions will expand without applying changes.
+
+*** Company Completion
+When the =:completion company= module is enabled, you get intelligent completion for:
+- Chezmoi template variables (e.g., =.chezmoi.hostname=)
+- Template functions (e.g., ={{ .variable }}=)
+
+The completion backend is automatically added when =chezmoi-mode= is active and removed
+when disabled.
+
+*** Evil Mode Integration
+When the =:editor evil= module is enabled, the template preview intelligently responds to
+editing state:
+
+- *Normal mode*: Template preview updates in real-time
+- *Insert mode*: Preview temporarily pauses to reduce distraction and improve performance
+- *Exiting insert*: Preview automatically refreshes with your changes
+
+This creates a seamless editing experience where the preview stays out of your way while
+typing but keeps you informed of the rendered output.
+
+** Workflow Example
+1. Find and edit a dotfile:
+   #+begin_src
+   M-x chezmoi-find RET
+   #+end_src
+
+2. Make changes in the source template while watching the rendered preview
+
+3. Save to apply changes:
+   #+begin_src
+   M-x chezmoi-write RET
+   or
+   C-x C-s (if chezmoi-mode is active)
+   #+end_src
+
+4. View changes before applying:
+   #+begin_src
+   M-x chezmoi-diff RET
+   #+end_src
+
+5. Manage chezmoi source repository:
+   #+begin_src
+   M-x chezmoi-magit-status RET
+   #+end_src
+
+* Configuration
+The module uses a custom fork of chezmoi.el that always runs commands locally rather than
+in TRAMP contexts. This is configured via the package recipe:
+
+#+begin_src emacs-lisp
+(package! chezmoi
+  :recipe (:host github :repo "offbyone/chezmoi.el" :branch "always-run-locally"))
+#+end_src
+
+** Customization
+You can customize chezmoi.el behavior through its standard variables. Common customizations:
+
+#+begin_src emacs-lisp
+;; Automatically show template buffer when opening chezmoi files
+(setq chezmoi-template-display-auto t)
+
+;; Template buffer window parameters
+(setq chezmoi-template-buffer-display-side 'right)
+#+end_src
 
 * Troubleshooting
-/There are no known problems with this module./ [[doom-report:][Report one?]]
+** Chezmoi binary not found
+The module includes a doctor check (=doctor.el=) that verifies chezmoi is installed.
+If you see a warning about the missing binary, install chezmoi following the instructions
+in the Installation section.
+
+** Template preview not updating
+If the template preview buffer isn't updating:
+1. Check that =chezmoi-mode= is active (look for "chezmoi" in the modeline)
+2. Try toggling the template display: =M-x chezmoi-template-buffer-display=
+3. Verify your chezmoi templates are syntactically correct with =chezmoi execute-template=
+
+** Evil mode conflicts
+If you experience issues with the template display in Evil mode:
+- The module hooks into =evil-insert-state-entry-hook= and =evil-insert-state-exit-hook=
+- Check that the =:editor evil= module is properly loaded
+- Template display is intentionally paused during insert mode for better performance
 
 * Frequently asked questions
-/This module has no FAQs yet./ [[doom-suggest-faq:][Ask one?]]
+** Does this work with encrypted files?
+Yes, chezmoi.el respects chezmoi's encryption settings. When you edit an encrypted file
+through =chezmoi-find=, it will be decrypted for editing and re-encrypted on save.
 
-* TODO Appendix
-#+begin_quote
- 🔨 This module has no appendix yet. [[doom-contrib-module:][Write one?]]
-#+end_quote
+** Can I use this with TRAMP for remote dotfiles?
+The custom fork used by this module (=always-run-locally= branch) runs chezmoi commands
+locally. For remote dotfile management, you may need to adjust the package recipe.
+
+** How does this differ from editing chezmoi files directly?
+Editing directly in =~/.local/share/chezmoi= works but doesn't provide:
+- Automatic template preview
+- Template variable completion
+- Convenient access to chezmoi commands
+- Automatic application of changes
+
+More information can be found on the [[https://github.com/tuh8888/chezmoi.el][chezmoi.el]] and [[https://github.com/offbyone/chezmoi.el][offbyone/chezmoi.el]] GitHub pages.

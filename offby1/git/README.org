@@ -1,18 +1,268 @@
 #+TITLE: Git Features
+#+DATE: December 25, 2025
+
+Enhanced Git integration and tooling for Doom Emacs.
+
+* Description
+This module extends Doom's built-in Git support with additional packages and customizations
+for improved Git workflows, including automatic commits, enhanced diffs, GitHub integration,
+and performance optimizations for remote file editing.
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#module-flags][Module Flags]]
+- [[#features][Features]]
+  - [[#git-auto-commit-mode][Git Auto Commit Mode]]
+  - [[#magit-delta][Magit Delta]]
+  - [[#consult-gh][Consult GitHub]]
+  - [[#remote-file-optimization][Remote File Optimization]]
+- [[#installation][Installation]]
+- [[#configuration][Configuration]]
+- [[#usage][Usage]]
+- [[#troubleshooting][Troubleshooting]]
+
+* Module Flags
+This module supports the following optional flags:
+
+- =+magit-delta= :: Enable delta integration for improved diffs in Magit
+- =+consult= :: Enable consult-gh for GitHub integration with consult interface
+
+Enable flags in your =init.el=:
+#+begin_src emacs-lisp
+(doom! :offby1
+       (git +magit-delta +consult))
+#+end_src
 
 * Features
-** magit-delta (failed experiment)
-Mostly I leave magit alone, but right now I'm trying out magit-delta to see if I
-like the diffing.
+** Git Auto Commit Mode
+Provides =git-auto-commit-mode= for automatic commits when saving files. This is useful
+for maintaining history in note-taking systems, documentation, or configuration files.
 
-On further experimentation, I think this is hampering performance when delta-ing nodejs projects, specifically when =package-lock.json= is being updated. Disabling
+The module configures git-auto-commit-mode to skip pre-commit hooks with the
+=--no-verify= flag, preventing slow or failing hooks from interfering with automatic
+commits.
 
-** git-auto-commit-mode
+*** Use Cases
+- Automatic commits for org-roam or denote notes
+- Version tracking for configuration files
+- Maintaining edit history in documentation
 
-Mostly left alone, but Git autocommit suuuucks when there are pre-commit hooks. So, nope!
+** Magit Delta
+When the =+magit-delta= flag is enabled, this integrates the [[https://github.com/dandavison/delta][delta]] syntax highlighter
+into Magit diffs for improved readability.
 
-** browse-at-remote
+*** Features
+- Syntax highlighting in diffs
+- Side-by-side diff view option
+- Line numbering
+- Git blame integration
 
-=browse-at-url= uses hashes by default, which is great if you want those, but I
-really prefer symbolic most of the time. Doom lets me flip those with a prefix
-arg to =+vc/browse-at-remote= so all I need to do is set it my way here.
+The module uses the "zenburn" dark theme by default, matching many Doom themes.
+
+*** Known Limitations
+The documentation notes that magit-delta can hamper performance when viewing diffs
+of large auto-generated files like =package-lock.json= in Node.js projects. Consider
+disabling this flag if you frequently work with such files.
+
+** Consult GitHub
+When the =+consult= flag is enabled, provides =consult-gh= for browsing and interacting
+with GitHub repositories through consult's completion interface.
+
+*** Features
+- Search and browse GitHub repositories
+- Clone repositories interactively
+- View issues and pull requests
+- Organization and user repository listing
+- Integration with =gh= CLI
+
+The module automatically:
+- Adds your GitHub username ("offbyone") to the default orgs list
+- Discovers and adds all your GitHub organizations using =gh org list=
+- Sets default clone directory to =~/projects=
+
+** Remote File Optimization
+Includes a custom function =offby1/disable-magit-refresh= that improves performance when
+editing files over TRAMP (remote files).
+
+When opening a remote file, the module disables Magit's automatic buffer saving,
+preventing slow save operations that can occur with remote connections.
+
+This is automatically enabled via a =find-file-hook=.
+
+* Installation
+Enable the module in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       git)  ; basic installation
+#+end_src
+
+Or with optional flags:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       (git +magit-delta +consult))
+#+end_src
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+** External Dependencies
+*** For magit-delta
+Install delta:
+#+begin_src shell
+# macOS
+brew install git-delta
+
+# Linux (Debian/Ubuntu)
+wget https://github.com/dandavison/delta/releases/download/*/git-delta_*_amd64.deb
+sudo dpkg -i git-delta_*_amd64.deb
+#+end_src
+
+*** For consult-gh
+Install GitHub CLI:
+#+begin_src shell
+# macOS
+brew install gh
+
+# Linux
+# See: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+#+end_src
+
+Authenticate with GitHub:
+#+begin_src shell
+gh auth login
+#+end_src
+
+* Configuration
+** Git Auto Commit Mode
+Enable in specific buffers or modes:
+
+#+begin_src emacs-lisp
+;; Enable for all org files in a specific directory
+(add-hook 'org-mode-hook
+  (lambda ()
+    (when (string-prefix-p "/path/to/notes/" buffer-file-name)
+      (git-auto-commit-mode 1))))
+
+;; Customize commit message format
+(setq gac-automatically-push-p nil)  ; Don't auto-push
+(setq gac-debounce-interval 60)       ; Wait 60s before committing
+#+end_src
+
+** Magit Delta
+Customize delta appearance:
+
+#+begin_src emacs-lisp
+(after! magit-delta
+  ;; Choose a different theme
+  (setq magit-delta-default-dark-theme "Dracula")
+  
+  ;; Use light theme
+  (setq magit-delta-default-light-theme "GitHub"))
+#+end_src
+
+Available themes can be found with: =delta --list-syntax-themes=
+
+** Consult GitHub
+Customize clone directory and organizations:
+
+#+begin_src emacs-lisp
+(after! consult-gh
+  ;; Add specific organizations
+  (add-to-list 'consult-gh-default-orgs-list "your-org")
+  
+  ;; Change default clone directory
+  (setq consult-gh-default-clone-directory "~/src")
+  
+  ;; Always confirm before cloning
+  (setq consult-gh-confirm-before-clone t))
+#+end_src
+
+* Usage
+** Git Auto Commit Mode
+Enable in a buffer:
+#+begin_example
+M-x git-auto-commit-mode
+#+end_example
+
+The buffer will now auto-commit on save with a timestamp-based commit message.
+
+** Magit Delta
+Once enabled with the =+magit-delta= flag, delta is automatically used in all Magit
+buffers. No manual activation needed.
+
+Toggle on/off per-session:
+#+begin_example
+M-x magit-delta-mode
+#+end_example
+
+** Consult GitHub
+Search repositories:
+#+begin_example
+M-x consult-gh-search-repos RET
+query> emacs
+#+end_example
+
+Clone a repository:
+#+begin_example
+M-x consult-gh-repo-clone RET
+#+end_example
+
+View your repositories:
+#+begin_example
+M-x consult-gh-default-repos RET
+#+end_example
+
+* Troubleshooting
+** Magit Delta not showing colors
+1. Verify delta is installed:
+   #+begin_src shell
+   delta --version
+   #+end_src
+
+2. Check that magit-delta-mode is active:
+   #+begin_src emacs-lisp
+   (bound-and-true-p magit-delta-mode)
+   #+end_src
+
+3. Try a different theme:
+   #+begin_src emacs-lisp
+   (setq magit-delta-default-dark-theme "gruvbox-dark")
+   #+end_src
+
+** Slow diff performance with delta
+This is a known issue with large auto-generated files. Either:
+1. Disable the =+magit-delta= flag
+2. Temporarily disable with =M-x magit-delta-mode=
+3. Configure delta to skip certain files in your =~/.gitconfig=
+
+** Consult-gh not finding repositories
+1. Ensure =gh= is authenticated:
+   #+begin_src shell
+   gh auth status
+   #+end_src
+
+2. Verify organization list:
+   #+begin_src emacs-lisp
+   consult-gh-default-orgs-list
+   #+end_src
+
+3. Refresh org list:
+   #+begin_src emacs-lisp
+   (setq consult-gh-default-orgs-list
+         (remove "" (split-string (consult-gh--command-to-string "org" "list") "\n")))
+   #+end_src
+
+** Git-auto-commit creating too many commits
+Increase the debounce interval:
+#+begin_src emacs-lisp
+(setq gac-debounce-interval 300)  ; Wait 5 minutes
+#+end_src
+
+Or disable auto-push and manually push when ready:
+#+begin_src emacs-lisp
+(setq gac-automatically-push-p nil)
+#+end_src

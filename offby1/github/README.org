@@ -1,1 +1,266 @@
-#+TITLE: Github config
+#+TITLE: GitHub Config
+#+DATE: December 25, 2025
+
+GitHub Copilot integration and project-level formatting controls.
+
+* Description
+This module provides deep integration with GitHub Copilot for AI-assisted coding, along
+with project-level controls for disabling formatting and syntax checking on a per-project
+basis.
+
+The module balances AI assistance with performance and project-specific requirements,
+allowing fine-grained control over when these features are active.
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#module-flags][Module Flags]]
+- [[#features][Features]]
+  - [[#github-copilot][GitHub Copilot]]
+  - [[#copilot-chat][Copilot Chat]]
+  - [[#project-level-formatting-control][Project-Level Formatting Control]]
+- [[#prerequisites][Prerequisites]]
+- [[#installation][Installation]]
+- [[#configuration][Configuration]]
+- [[#usage][Usage]]
+- [[#troubleshooting][Troubleshooting]]
+
+* Module Flags
+- =+copilot= :: Enable GitHub Copilot code completion and chat features
+
+Enable in your =init.el=:
+#+begin_src emacs-lisp
+(doom! :offby1
+       (github +copilot))
+#+end_src
+
+* Features
+** GitHub Copilot
+When =+copilot= is enabled, provides AI-powered code completion using GitHub Copilot.
+
+*** Features
+- Inline code completion as you type
+- Multi-line code suggestions
+- Accept completions by word or full suggestion
+- Automatic activation in programming modes
+- Configurable idle delay before suggestions appear
+
+*** Key Improvements
+- Disables indent offset warnings which are typically unhelpful
+- Suppresses "exceeds max char" warnings for large files
+- Configurable 0.1s idle delay (reduces distraction from constant pop-ups)
+
+** Copilot Chat
+Interactive chat interface for GitHub Copilot, allowing conversational AI assistance
+without leaving Emacs.
+
+*** Frontends
+The module supports multiple frontends:
+- =org= :: Display chat in org-mode format (default)
+- =markdown= :: Display chat in markdown format
+- =shell-maker= :: REPL-style interface
+
+*** Features
+- Yank responses directly into buffers
+- Navigate through chat history
+- Multiple backend support (curl-based by default)
+- Integration with org-mode and markdown
+
+** Project-Level Formatting Control
+Provides directory-local variables to disable formatting on a per-project basis.
+
+This is useful for:
+- Legacy codebases with inconsistent formatting
+- Projects with different formatting standards
+- Generated code that shouldn't be reformatted
+- Performance optimization in large projects
+
+*** Variables
+- =+offby1/project-disable-formatting= :: Disable format-all and =+format/buffer=
+- =+offby1/project-disable-flycheck= :: Disable syntax checking (declared but not implemented)
+
+These are marked as safe local variables and can be set in =.dir-locals.el=.
+
+* Prerequisites
+** GitHub Copilot Subscription
+You need an active GitHub Copilot subscription:
+- Individual: $10/month or $100/year
+- Business: $19/user/month
+- Free for verified students and open source maintainers
+
+Sign up at: https://github.com/features/copilot
+
+** GitHub CLI
+Recommended for authentication:
+#+begin_src shell
+# macOS
+brew install gh
+
+# Authenticate
+gh auth login
+#+end_src
+
+* Installation
+Enable the module in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       (github +copilot))
+#+end_src
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+** First-time Setup
+On first use, Copilot will prompt you to authenticate:
+
+1. =M-x copilot-login=
+2. Follow the browser authentication flow
+3. Enter the provided code
+4. Return to Emacs
+
+* Configuration
+** Copilot Behavior
+Customize completion timing and behavior:
+
+#+begin_src emacs-lisp
+(after! copilot
+  ;; Increase idle delay for less frequent suggestions
+  (setq copilot-idle-delay 0.5)
+  
+  ;; Disable copilot in specific modes
+  (add-hook 'org-mode-hook (lambda () (copilot-mode -1))))
+#+end_src
+
+** Copilot Chat Frontend
+Change the chat frontend:
+
+#+begin_src emacs-lisp
+(after! copilot-chat
+  ;; Use markdown instead of org
+  (setq copilot-chat-frontend 'markdown)
+  
+  ;; Use shell-maker for REPL-style interface
+  (setq copilot-chat-frontend 'shell-maker))
+#+end_src
+
+** Project-Level Formatting
+In your project root, create =.dir-locals.el=:
+
+#+begin_src emacs-lisp
+;;; .dir-locals.el --- Project settings
+((nil . ((+offby1/project-disable-formatting . t))))
+#+end_src
+
+This disables formatting for all files in the project. You can also scope it to
+specific modes:
+
+#+begin_src emacs-lisp
+;;; .dir-locals.el --- Disable formatting only for JavaScript
+((js-mode . ((+offby1/project-disable-formatting . t))))
+#+end_src
+
+* Usage
+** Copilot Completion
+Copilot automatically activates in =prog-mode= buffers.
+
+*** Keybindings
+| Key           | Command                             | Description                   |
+|---------------+-------------------------------------+-------------------------------|
+| =<tab>= / =TAB= | =copilot-accept-completion=         | Accept full completion        |
+| =C-<tab>=     | =copilot-accept-completion-by-word= | Accept next word only         |
+| =M-[=         | =copilot-previous-completion=       | Cycle to previous suggestion  |
+| =M-]=         | =copilot-next-completion=           | Cycle to next suggestion      |
+
+*** Workflow
+1. Start typing code
+2. After 0.1s idle, Copilot shows suggestion (grayed out)
+3. Press =<tab>= to accept or =C-<tab>= to accept word-by-word
+4. Continue typing to dismiss suggestion
+
+** Copilot Chat
+Start a chat session:
+#+begin_example
+M-x copilot-chat
+#+end_example
+
+*** Chat Keybindings
+| Key         | Command                      | Description                     |
+|-------------+------------------------------+---------------------------------|
+| =C-c C-y=   | =copilot-chat-yank=          | Yank latest response            |
+| =C-c M-y=   | =copilot-chat-yank-pop=      | Yank previous response          |
+| =C-c C-M-y= | =copilot-chat-yank-pop -1=   | Yank next response              |
+
+*** Example Chat Workflow
+#+begin_example
+1. M-x copilot-chat
+2. Type: "Explain this function"
+3. Select code region before opening chat
+4. Response appears in org/markdown format
+5. C-c C-y to insert response into original buffer
+#+end_example
+
+** Disabling Formatting
+Per-buffer:
+#+begin_example
+M-x set-variable RET +offby1/project-disable-formatting RET t
+#+end_example
+
+Per-project:
+Create =.dir-locals.el= as shown in Configuration section.
+
+* Troubleshooting
+** Copilot not suggesting
+1. Check Copilot is active:
+   #+begin_src emacs-lisp
+   (bound-and-true-p copilot-mode)
+   #+end_src
+
+2. Verify authentication:
+   #+begin_example
+   M-x copilot-login
+   #+end_example
+
+3. Check network connectivity to GitHub
+
+4. Look for errors in =*Messages*= buffer
+
+** Copilot suggestions too frequent/annoying
+Increase the idle delay:
+#+begin_src emacs-lisp
+(setq copilot-idle-delay 1.0)  ; Wait 1 second
+#+end_src
+
+Or disable in specific modes:
+#+begin_src emacs-lisp
+(add-hook 'text-mode-hook (lambda () (copilot-mode -1)))
+#+end_src
+
+** Copilot Chat not loading
+Ensure all frontends are loaded:
+#+begin_src emacs-lisp
+(require 'copilot-chat-org)
+(require 'copilot-chat-markdown)
+(require 'copilot-chat-shell-maker)
+#+end_src
+
+Check the backend is set:
+#+begin_src emacs-lisp
+copilot-chat-backend  ; should be 'curl
+#+end_src
+
+** Formatting still active with disable flag
+1. Verify =.dir-locals.el= exists in project root
+2. Reload directory locals:
+   #+begin_example
+   M-x normal-mode
+   #+end_example
+3. Check variable value:
+   #+begin_src emacs-lisp
+   +offby1/project-disable-formatting  ; should be t
+   #+end_src
+
+** "Unsafe variable" prompt
+The module marks =+offby1/project-disable-formatting= as safe, but Emacs may still
+prompt. Choose "!" to mark as safe permanently.

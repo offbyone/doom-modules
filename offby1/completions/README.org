@@ -1,0 +1,85 @@
+#+TITLE: Completions Module
+#+DATE: December 25, 2025
+
+Enhanced completion and navigation utilities for Doom Emacs.
+
+* Description
+This module extends Doom's completion capabilities with additional tools for code navigation
+and reference tracking. It focuses on improving the xref (cross-reference) experience with
+a consult-based navigation interface.
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#features][Features]]
+- [[#prerequisites][Prerequisites]]
+- [[#configuration][Configuration]]
+- [[#usage][Usage]]
+- [[#keybindings][Keybindings]]
+
+* Features
+** Consult XRef Stack Navigation
+Provides a consult-based interface for navigating through xref marker stacks. This
+allows you to see your entire navigation history and jump to any point in the stack
+using consult's powerful completion interface.
+
+The xref system in Emacs tracks locations you've visited when using commands like
+=xref-find-definitions= (=M-.=). This module enhances that experience by:
+
+- Displaying your navigation history in a searchable list
+- Allowing quick jumps to any previous location
+- Integration with consult's completion UI for fuzzy matching
+- Better visualization of your code exploration path
+
+* Prerequisites
+This module requires:
+- Doom Emacs with =:completion vertico= or =:completion ivy= (consult backend)
+- The =consult= package (typically provided by Doom's completion modules)
+
+* Configuration
+The module loads the =consult-xref-stack= package from GitHub:
+
+#+begin_src emacs-lisp
+(package! consult-xref-stack
+  :recipe (:host github :repo "brett-lempereur/consult-xref-stack"))
+#+end_src
+
+No additional configuration is required; the package is configured with sensible defaults.
+
+* Usage
+** Navigating the XRef Stack
+The xref system automatically builds a stack as you navigate code:
+
+1. Jump to a definition with =M-.= (=xref-find-definitions=)
+2. This pushes your current location onto the xref stack
+3. Continue exploring code, each jump adds to the stack
+4. Use =C-,= to see the entire stack and jump to any previous location
+
+The consult interface shows:
+- File paths and line numbers
+- Context around each marker
+- Your position in the navigation history
+
+** Example Workflow
+#+begin_example
+1. Working in function 'foo' in file.el
+2. M-. on 'bar' -> jumps to definition (pushes file.el:foo onto stack)
+3. M-. on 'baz' -> jumps to definition (pushes previous location onto stack)
+4. M-. on 'qux' -> jumps to definition (pushes previous location onto stack)
+5. C-, -> opens consult interface showing all 3 previous locations
+6. Select any location to jump back directly (no need for repeated M-,)
+#+end_example
+
+This is more powerful than the standard =M-,= (=xref-pop-marker-stack=) which only
+goes back one step at a time.
+
+* Keybindings
+| Key   | Command                        | Description                           |
+|-------+--------------------------------+---------------------------------------|
+| =C-,= | =consult-xref-stack-backward=  | Navigate backward through xref stack  |
+
+The default Emacs/Doom xref keybindings remain available:
+| Key   | Command                  | Description                    |
+|-------+--------------------------+--------------------------------|
+| =M-.= | =xref-find-definitions=  | Jump to definition             |
+| =M-,= | =xref-pop-marker-stack=  | Pop back (one step)            |
+| =M-?= | =xref-find-references=   | Find references                |

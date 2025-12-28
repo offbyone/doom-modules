@@ -1,1 +1,224 @@
 #+TITLE: Experimental Module
+#+DATE: December 25, 2025
+
+Experimental and emerging AI/LLM integrations for Doom Emacs.
+
+* Description
+This module contains experimental features and integrations, primarily focused on
+Large Language Model (LLM) interactions within Emacs. It provides multiple approaches
+to AI-assisted coding and chat interfaces.
+
+The module is designed to be modular, with features enabled through flags so you can
+choose which experimental integrations to use.
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#module-flags][Module Flags]]
+- [[#features][Features]]
+  - [[#chatgpt-integration][ChatGPT Integration]]
+  - [[#org-babel-chatgpt][Org-Babel ChatGPT]]
+  - [[#gptel-configuration][GPTel Configuration]]
+- [[#prerequisites][Prerequisites]]
+- [[#installation][Installation]]
+- [[#configuration][Configuration]]
+- [[#usage][Usage]]
+  - [[#chatgpt-commands][ChatGPT Commands]]
+  - [[#org-babel-usage][Org-Babel Usage]]
+  - [[#gptel-usage][GPTel Usage]]
+- [[#troubleshooting][Troubleshooting]]
+
+* Module Flags
+This module supports the following flags to enable specific features:
+
+- =+chatgpt= :: Enable ChatGPT shell integration and custom API bindings
+- =+ob-chatgpt= :: Enable ChatGPT source blocks in org-mode
+- =+tty-format= :: Enable TTY formatting utilities (package available but not configured)
+
+Enable flags in your =init.el=:
+#+begin_src emacs-lisp
+(doom! :offby1
+       (exp +chatgpt +ob-chatgpt))
+#+end_src
+
+* Features
+** ChatGPT Integration
+The =+chatgpt= flag enables two distinct ChatGPT integrations:
+
+*** ChatGPT Shell (chatgpt-shell)
+An interactive shell interface for ChatGPT and DALL-E:
+- REPL-style chat interface
+- Direct conversations with ChatGPT
+- Image generation with DALL-E
+- Support for multiple AI backends (OpenAI, Anthropic)
+
+*** Custom ChatGPT Commands
+Custom Emacs Lisp bindings (modeled on Xe Iaso's implementation) providing:
+- Direct API integration with OpenAI
+- Context-aware code assistance
+- Region-based code explanation
+- Inline answers in dedicated buffers
+
+The custom commands use =auth-source= for secure API key management and create
+temporary buffers for responses in markdown format.
+
+** Org-Babel ChatGPT
+The =+ob-chatgpt= flag enables ChatGPT source blocks in org-mode documents:
+- Execute ChatGPT queries as code blocks
+- Embed AI responses in org documents
+- Export AI-generated content
+- Integration with org-mode's literate programming features
+
+Example:
+#+begin_example
+#+begin_src chatgpt
+Explain the observer pattern in Emacs Lisp
+#+end_src
+#+end_example
+
+** GPTel Configuration
+When the =:tools llm= module is enabled, this module automatically configures
+=gptel= to use:
+- Claude 3.7 Sonnet as the default model
+- GitHub Copilot as the backend
+
+This provides an alternative LLM interface that integrates with Doom's broader
+LLM tooling infrastructure.
+
+* Prerequisites
+** API Keys
+Store your API keys in =~/.authinfo= or =~/.authinfo.gpg=:
+
+#+begin_example
+machine api.openai.com login <username>-token password <your-api-key>
+machine api.anthropic.com login <username> password <your-anthropic-key>
+#+end_example
+
+** External Dependencies
+- =curl= for API requests (usually pre-installed)
+- Optional: GitHub Copilot subscription for =gptel= backend
+
+* Installation
+Enable the module with desired flags in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       (exp +chatgpt +ob-chatgpt))
+#+end_src
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+* Configuration
+** Base Prompts
+Customize the system prompt for custom ChatGPT commands:
+
+#+begin_src emacs-lisp
+(setq +chatgpt-base-prompt
+  '("You are an expert Emacs Lisp programmer."
+    "Provide concise, idiomatic solutions."
+    "Include docstrings and comments."))
+#+end_src
+
+** ChatGPT Shell Models
+The module uses =auth-source= for API key retrieval. Keys are automatically
+looked up from your authinfo file based on the host.
+
+** GPTel Backend
+To use a different model or backend:
+
+#+begin_src emacs-lisp
+(after! gptel
+  (setq gptel-model 'gpt-4  ; or 'claude-3-opus-20240229
+        gptel-backend (gptel-make-openai "OpenAI"
+                        :key (lambda () (auth-source-pick-first-password
+                                         :host "api.openai.com")))))
+#+end_src
+
+* Usage
+** ChatGPT Commands
+The =+chatgpt= flag provides three interactive commands:
+
+*** =+ask-chatgpt=
+Ask a general question to ChatGPT:
+#+begin_example
+M-x +ask-chatgpt RET
+question> How do I parse JSON in Emacs Lisp?
+#+end_example
+
+Creates a buffer =*+chatgpt-detail*= with the response in markdown format.
+
+*** =+ask-chatgpt-with-mode=
+Ask a question with the current major mode as context:
+#+begin_example
+M-x +ask-chatgpt-with-mode RET
+question> Write a function to reverse a list
+#+end_example
+
+Creates a buffer =*+chatgpt-quick*= with code-focused response. The AI knows
+you're in (for example) =emacs-lisp-mode= and tailors the answer accordingly.
+
+*** =+chatgpt-explain-region=
+Select a region of code and explain it:
+1. Select code region
+2. =M-x +chatgpt-explain-region=
+3. Response appears in =*+chatgpt-explain*= buffer
+
+The command includes:
+- The selected code
+- Your current major mode
+- Syntax-highlighted context
+
+** Org-Babel Usage
+With =+ob-chatgpt= enabled, use ChatGPT in org source blocks:
+
+#+begin_example
+#+begin_src chatgpt
+Write a Python function to calculate Fibonacci numbers
+#+end_src
+
+#+RESULTS:
+: Here's an efficient implementation using memoization...
+#+end_example
+
+Execute with =C-c C-c= as with any org-babel block.
+
+** GPTel Usage
+When =:tools llm= is enabled, use =gptel= commands:
+- =M-x gptel= :: Start a dedicated ChatGPT buffer
+- =M-x gptel-send= :: Send region/buffer to LLM
+- =C-c RET= :: In gptel buffer, send message
+
+* Troubleshooting
+** "API key not found"
+Verify your =~/.authinfo= contains the correct entry:
+#+begin_example
+machine api.openai.com login <username>-token password sk-...
+#+end_example
+
+Test with:
+#+begin_src emacs-lisp
+(auth-source-pick-first-password :host "api.openai.com")
+#+end_src
+
+** "Connection timeout"
+Check your network and firewall settings. The module uses HTTPS to:
+- =api.openai.com=
+- =api.anthropic.com=
+
+** ChatGPT Shell not loading
+Ensure the =+chatgpt= flag is enabled:
+#+begin_src emacs-lisp
+(modulep! :offby1 exp +chatgpt)  ; should return t
+#+end_src
+
+If =nil=, add the flag to your =init.el= and run =doom sync=.
+
+** Org-babel blocks not executing
+1. Check =+ob-chatgpt= flag is enabled
+2. Verify =ob-chatgpt-shell-setup= was called:
+   #+begin_src emacs-lisp
+   (featurep 'ob-chatgpt-shell)  ; should return t
+   #+end_src
+3. Check that =chatgpt= is in =org-babel-load-languages=

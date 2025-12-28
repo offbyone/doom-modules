@@ -1,0 +1,48 @@
+#+TITLE: LLM Module
+#+DATE: December 25, 2025
+
+Agent-shell and ACP integration for LLM interactions.
+
+* Description
+This module provides integration with agent-shell and ACP (Agent Chat Protocol),
+enabling direct LLM agent interactions within Emacs through a shell-maker based interface.
+
+This is a minimal module focused on loading the required dependencies for agent-based
+LLM interactions.
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#packages][Packages]]
+- [[#installation][Installation]]
+- [[#related-modules][Related Modules]]
+
+* Packages
+The module loads three interconnected packages:
+
+** shell-maker
+Base infrastructure for creating shell-like REPL interfaces in Emacs.
+
+** acp
+Agent Chat Protocol implementation for structured agent communications.
+
+** agent-shell
+Shell interface for interacting with LLM agents, built on shell-maker and ACP.
+
+* Installation
+Enable the module in your =init.el=:
+
+#+begin_src emacs-lisp
+(doom! :offby1
+       llm)
+#+end_src
+
+Then run:
+#+begin_src shell
+doom sync
+#+end_src
+
+* Related Modules
+For more comprehensive LLM features, see:
+- =:offby1 exp= module - ChatGPT and gptel integration
+- =:tools llm= (Doom core) - General LLM tooling
+- =:offby1 github= module - Copilot integration

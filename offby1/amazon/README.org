@@ -1,21 +1,139 @@
 #+TITLE: Amazon Configuration
+#+DATE: December 25, 2025
 
-I don't work there any more, but ... might want to keep this
+A comprehensive module for working with Amazon's internal development tools and environments.
+This module integrates various Amazon-specific packages and configurations for Emacs, including
+workspace management, Brazil build system support, code browsing, and specialized file modes.
 
-* Components
-** BRIEF
-** rusty-xwiki
+* Description
+This module provides deep integration with Amazon's internal development ecosystem, including:
 
-Install [[https://w.amazon.com/bin/view/RustyAmazonWiki/][rusty-amazon-wiki]] thusly:
+- Brazil workspace management and configuration editing
+- Code repository browsing and navigation
+- Amazon WorkDocs integration
+- Smithy and Ion file format support
+- LSP support for Brazil Config files via Barium
+- Remote development support via BRIEF
+- XWiki editing support
 
-#+begin_src
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#prerequisites][Prerequisites]]
+- [[#features][Features]]
+- [[#configuration][Configuration]]
+- [[#keybindings][Keybindings]]
+
+* Prerequisites
+This module requires:
+
+- Access to Amazon's internal git repositories
+- SSH access to git.amazon.com configured
+- Brazil build system installed (for workspace management)
+- Barium LSP server (for Brazil Config editing)
+- Optional: rusty-amazon-wiki for XWiki support
+
+* Features
+** Smithy Mode
+Provides syntax highlighting and editing support for Smithy IDL files, Amazon's interface
+definition language used for API specifications.
+
+** Brazil Workspace Management
+Full integration with Amazon's Brazil build system and workspace management:
+
+- Create and delete workspaces
+- Add packages to existing workspaces
+- Sync workspace dependencies
+- Use version sets for dependency management
+- Automatic projectile integration with workspace directories
+
+The module automatically discovers Brazil workspaces in =~/workspace= and adds them to
+projectile's search path.
+
+** Brazil Config Editing
+Specialized support for Brazil Config files with LSP integration:
+
+- Syntax highlighting via =brazil-config-mode=
+- LSP support through Barium server
+- Automatic Perl header removal from Config files
+- File extension association for =.cfg= files
+
+** Code Browsing
+Navigate Amazon's internal code repositories:
+
+- Browse source code at point in internal code browser
+- Browse git references
+- Browse package definitions
+- Jump to package documentation
+
+** ION Mode
+Edit Amazon Ion data format files with proper indentation and smartparens integration.
+The module configures smartparens to properly handle curly braces with automatic indentation.
+
+** BRIEF - Brazil Interface for Emacs
+Remote development support allowing interaction with Brazil commands on remote hosts:
+
+- Execute Brazil commands remotely
+- Manage remote workspaces
+- Default host and directory configuration
+- Interactive mode with =C-<tab>= binding
+
+** XWiki Editing
+Support for editing Amazon internal wiki pages using xwiki-mode.
+
+** Org-mode Integration
+Automatically adds Amazon WorkDocs directory to org-agenda-files for note management.
+
+* Configuration
+The module uses several default configurations that can be overridden:
+
+#+begin_src emacs-lisp
+;; Default workspace root directory
+(setq amz-workspace-default-root-directory "~/workspace")
+
+;; BRIEF remote host configuration
+(setq amz-brief-default-host "your-host.amazon.com"
+      amz-brief-remote-workplace-dir "~/workspace")
+#+end_src
+
+** Installing rusty-amazon-wiki
+For XWiki support, install the rusty-amazon-wiki tool:
+
+#+begin_src shell
 toolbox registry add s3://buildertoolbox-registry-myr-toolbox-us-west-2/tools.json
 toolbox install rusty-amazon-wiki
 #+end_src
 
-** Brazil-Config LSP Mode (barium)
+** Perl Config File Handling
+The module automatically detects Brazil Config files (named "Config" or with =.cfg= extension)
+and switches them to =brazil-config-mode=, removing any legacy Perl mode headers.
 
-** ION Mode
+* Keybindings
+** Version Control Prefix (=SPC v=)
+| Key     | Command                      | Description                 |
+|---------+------------------------------+-----------------------------|
+| =SPC v A= | =amz-browse-source-at-point= | Browse source code at point |
 
-Configure ion-mode and smartparens. Having some kind of indent support in curly
-braces is slick.
+** Amazon Prefix (=SPC z=)
+Main prefix for all Amazon-specific commands.
+
+*** Browse (=SPC z b=)
+| Key       | Command                       | Description                 |
+|-----------+-------------------------------+-----------------------------|
+| =SPC z b s= | =amz-browse-source-at-point=  | Browse source at point      |
+| =SPC z b g= | =amz-browse-git-ref-at-point= | Browse git ref at point     |
+| =SPC z b r= | =amz-browse-git-ref=          | Browse git ref (prompted)   |
+| =SPC z b p= | =amz-browse-package-at-point= | Browse package at point     |
+
+*** Workspace (=SPC z w=)
+| Key       | Command                         | Description          |
+|-----------+---------------------------------+----------------------|
+| =SPC z w c= | =amz-workspace-create-workspace=  | Create workspace     |
+| =SPC z w d= | =amz-workspace-delete-workspace=  | Delete workspace     |
+| =SPC z w a= | =amz-workspace-add-package=       | Add package          |
+| =SPC z w u= | =amz-workspace-use-version-set=   | Use version set      |
+| =SPC z w s= | =amz-workspace-sync-workspace=    | Sync workspace       |
+
+*** BRIEF Mode
+| Key       | Command     | Description        |
+|-----------+-------------+--------------------|
+| =C-<tab>= | =amz-brief= | BRIEF interactive  |
