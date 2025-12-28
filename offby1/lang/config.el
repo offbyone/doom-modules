@@ -20,3 +20,21 @@
     :mode ("\\.tmpl\\'" . go-template-mode)))
 
 (cond (IS-MAC (use-package! osx-plist)))
+
+(use-package! scad-mode
+  :when (modulep! +openscad)
+  :mode ("\\.scad\\'" . scad-mode)
+  :config
+  (setq scad-command
+        (cond
+         (IS-MAC
+          (let ((app-binary "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"))
+            (if (file-exists-p app-binary)
+                app-binary
+              "openscad")))
+         (t "openscad"))))
+
+(use-package! ob-scad
+  :when (modulep! +openscad)
+  :commands org-babel-execute:scad
+  :after org)

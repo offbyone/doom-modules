@@ -4,3 +4,5 @@
 (package! just-mode)
 (package! caddyfile-mode)
 (cond (IS-MAC (package! osx-plist)))
+(when (modulep! +openscad)
+  (package! scad-mode))
