@@ -38,3 +38,23 @@
   :when (modulep! +openscad)
   :commands org-babel-execute:scad
   :after org)
+
+(use-package! apheleia
+  :config
+  ;; Define both formatters
+  (add-to-list 'apheleia-formatters '(tofu "tofu" "fmt" "-"))
+
+  ;; Don't set a default in mode-alist since we'll use buffer-local selection
+  (setf (alist-get 'terraform-mode apheleia-mode-alist) nil)
+
+  (defun offby1/select-terraform-formatter ()
+    "Select tofu or terraform formatter based on executable availability.
+Prefers tofu if available, falls back to terraform."
+    (setq-local apheleia-formatter
+                (cond
+                 ((executable-find "tofu") 'tofu)
+                 ((executable-find "terraform") 'terraform)
+                 (t nil))))
+
+  :hook
+  (terraform-mode . offby1/select-terraform-formatter))
