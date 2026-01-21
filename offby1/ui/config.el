@@ -138,3 +138,44 @@
      ("The Regents of the University of California\\.  All rights reserved\\." . "SUCH DAMAGE\\.")
      ("Permission is hereby granted, free of charge" . "authorization from the X Consortium\\.")
      ("Licensed under the Apache License" . "limitations under the License\\."))))
+
+(defvar offby1/persp-dir-mappings
+  '(("~/.doom.d/" . "config")
+    ("~/.local/share/chezmoi/" . "config")
+    ("~/Dropbox/org/notes/" . "notes")
+    ("~/.config/" . "config")
+    ("~/Library/CloudStorage/Dropbox/notes/" . "notes")
+    ("~/Library/CloudStorage/Dropbox (Personal)/notes/" . "notes"))
+  "Alist mapping project directories to perspective names.
+Each entry is (DIRECTORY . PERSPECTIVE-NAME) where DIRECTORY is a path
+prefix (with ~ expansion) and PERSPECTIVE-NAME is the target perspective.")
+
+(defun offby1/file-matches-persp-dir-p (filepath dir-pattern)
+  "Check if FILEPATH starts with DIR-PATTERN after expanding ~."
+  (when (and filepath (stringp filepath))
+    (let ((expanded-pattern (expand-file-name dir-pattern))
+          (expanded-file (expand-file-name filepath))
+          (case-fold-search (eq system-type 'darwin)))
+      (if case-fold-search
+          (string-prefix-p (downcase expanded-pattern) (downcase expanded-file))
+        (string-prefix-p expanded-pattern filepath)))))
+
+(defun offby1/switch-to-persp-based-on-file ()
+  "Switch to a perspective based on the current buffer's file path."
+  (when (and persp-mode
+             (not *persp-pretend-switched-off*)
+             buffer-file-name)
+    (when-let* ((match (cl-find-if
+                        (lambda (mapping)
+                          (offby1/file-matches-persp-dir-p buffer-file-name (car mapping)))
+                        offby1/persp-dir-mappings))
+                (persp-name (cdr match)))
+      ;; Create the perspective if it doesn't exist, then switch to it
+      (let ((persp (persp-add-new persp-name)))
+        (when persp
+          (persp-switch persp-name)
+
+          ;; ensure the buffer is added to the perspective
+          (persp-add-buffer (current-buffer) persp nil nil))))))
+
+(add-hook 'find-file-hook #'offby1/switch-to-persp-based-on-file)
