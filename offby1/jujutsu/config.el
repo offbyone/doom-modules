@@ -75,3 +75,19 @@
       "n" #'jj-new-transient
       "r" #'jj-rebase-transient
       "l" #'jj-bookmark-list)
+
+;; Make wdired work with jujutsu repositories
+;; jj auto-tracks all changes, so VC state checks are unnecessary and cause errors
+(defun +offby1/jujutsu-vc-rename-file-advice (orig-fun old new &optional ok-if-already-exists)
+  "Skip VC state checks for jujutsu repos since jj auto-tracks changes."
+  (if (eq (vc-backend old) 'jj)
+      ;; For jj repos, use plain rename without VC integration
+      (progn
+        (rename-file old new ok-if-already-exists)
+        ;; jj will auto-track the rename
+        (vc-file-clearprops old)
+        (vc-file-clearprops new))
+    ;; For other backends, use normal behavior
+    (funcall orig-fun old new ok-if-already-exists)))
+
+(advice-add 'vc-rename-file :around #'+offby1/jujutsu-vc-rename-file-advice)
