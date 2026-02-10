@@ -144,6 +144,7 @@
     ("~/.local/share/chezmoi/" . "config")
     ("~/Dropbox/org/notes/" . "notes")
     ("~/.config/" . "config")
+    ("~/.copilot/" . "config")
     ("~/Library/CloudStorage/Dropbox/notes/" . "notes")
     ("~/Library/CloudStorage/Dropbox (Personal)/notes/" . "notes"))
   "Alist mapping project directories to perspective names.
