@@ -100,17 +100,17 @@
 
 (map! :leader "t t" #'offby1/insert-current-timestamp)
 
-;; Equalize window sizes after splitting or closing windows
-(use-package! emacs
-  :config
-  (defadvice split-window-right (after balance-out-windows activate)
-    (balance-windows))
-  (defadvice split-window-below (after balance-out-windows activate)
-    (balance-windows))
-  (defadvice find-file-other-window (after balance-out-windows activate)
-    (balance-windows))
-  (defadvice delete-window (after balance-out-windows activate)
-    (balance-windows)))
+;; Equalize window sizes after splitting or closing windows.
+;; Use `window-main-window' so that side windows (dape, org-roam, etc.)
+;; are excluded from rebalancing.
+(defun offby1/balance-main-windows (&rest _)
+  "Balance only the main (non-side) windows of the current frame."
+  (balance-windows (window-main-window)))
+
+(advice-add 'split-window-right      :after #'offby1/balance-main-windows)
+(advice-add 'split-window-below      :after #'offby1/balance-main-windows)
+(advice-add 'find-file-other-window  :after #'offby1/balance-main-windows)
+(advice-add 'delete-window           :after #'offby1/balance-main-windows)
 
 ;; I'd like to have just the buffer name, then if applicable the project folder.
 ;; For example when I open my config file it the window will be titled =config.org ●
