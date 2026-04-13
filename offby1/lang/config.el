@@ -61,3 +61,8 @@ Prefers tofu if available, falls back to terraform."
 
   :hook
   (terraform-mode . offby1/select-terraform-formatter))
+
+(use-package! sops-file
+  :after yaml-mode
+  :config
+  (sops-file-auto-mode 1))

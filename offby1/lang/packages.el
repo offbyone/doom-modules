@@ -8,3 +8,5 @@
   (package! scad-mode))
 (package! flymake-zizmor
   :recipe (:type git :host github :repo "unhammer/flymake-zizmor"))
+(package! sops-file
+  :recipe (:type git :host github :repo "ajarara/sops-file.el"))
