@@ -11,3 +11,5 @@
   (package! rainbow-delimiters))
 
 (package! string-inflection)
+
+(package! tokyo-night :recipe (:type git :host github :repo "bbatsov/tokyo-night-emacs"))
