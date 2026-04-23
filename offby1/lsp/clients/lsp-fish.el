@@ -59,7 +59,7 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
   :group 'lsp-fish
   :package-version '(lsp-mode . "6.3"))
 
-(defun lsp-fish--fish-ls-server-command ()
+(defun lsp-fish--fish-lsp-server-command ()
   "Startup command for Fish language server."
   (list (lsp-package-path 'fish-language-server) "start"))
 
@@ -79,7 +79,7 @@ This prevents the Fish server from being turned on for unsupported dialects, e.g
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection #'lsp-fish--fish-ls-server-command)
+  :new-connection (lsp-stdio-connection #'lsp-fish--fish-lsp-server-command)
   :major-modes '(sh-mode)
   :priority -1
   :activation-fn #'lsp-fish-check-sh-shell
@@ -87,7 +87,7 @@ This prevents the Fish server from being turned on for unsupported dialects, e.g
                     '(("EXPLAINSHELL_ENDPOINT" . lsp-fish-explainshell-endpoint)
                       ("HIGHLIGHT_PARSING_ERRORS" . lsp-fish-highlight-parsing-errors)
                       ("GLOB_PATTERN" . lsp-fish-glob-pattern)))
-  :server-id 'fish-ls
+  :server-id 'fish-lsp
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'fish-lsp callback error-callback))))
 
