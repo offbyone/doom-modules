@@ -39,6 +39,9 @@
   :commands org-babel-execute:scad
   :after org)
 
+(use-package! flymake-zizmor
+  :hook (yaml-ts-mode . flymake-zizmor-setup))
+
 (use-package! apheleia
   :config
   ;; Define both formatters

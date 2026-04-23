@@ -6,3 +6,5 @@
 (cond (IS-MAC (package! osx-plist)))
 (when (modulep! +openscad)
   (package! scad-mode))
+(package! flymake-zizmor
+  :recipe (:type git :host github :repo "unhammer/flymake-zizmor"))
