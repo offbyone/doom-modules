@@ -22,8 +22,7 @@
 (cond (IS-MAC (use-package! osx-plist)))
 
 (use-package! scad-mode
-  :when (modulep! +openscad)
-  :mode ("\\.scad\\'" . scad-mode)
+  :when (modulep! :lang scad)
   :config
   (setq scad-command
         (cond
@@ -35,7 +34,7 @@
          (t "openscad"))))
 
 (use-package! ob-scad
-  :when (modulep! +openscad)
+  :when (modulep! :lang scad)
   :commands org-babel-execute:scad
   :after org)
 
