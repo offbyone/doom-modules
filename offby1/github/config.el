@@ -44,7 +44,7 @@
              '(copilot copilot-exceeds-max-char))
 
 (use-package! copilot-chat
-  :when (modulep! +copilot)
+  :when (modulep! +copilot-chat)
   :bind (:map global-map
               ("C-c C-y" . copilot-chat-yank)
               ("C-c M-y" . copilot-chat-yank-pop)
