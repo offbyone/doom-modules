@@ -4,7 +4,8 @@
   :config
   (add-to-list 'project-vc-extra-root-markers ".jj"))
 
-(use-package! vc-jj)
+(use-package! vc-jj
+  :when (modulep! +vc-jj))
 ;; this fails on load due to `(void-variable jujutsushi-dispatch)` in jujutsushi.el
 ;; (use-package! jujutsushi)
 

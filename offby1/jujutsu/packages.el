@@ -3,4 +3,5 @@
 ;; (package! jujutsushi
 ;;   :recipe (:type git :repo "https://git.sr.ht/~puercopop/jujutsushi"))
 (package! jj-mode :recipe (:host github :repo "bolivier/jj-mode.el"))
-(package! vc-jj)
+(if (modulep! +vc-jj)
+    (package! vc-jj))
