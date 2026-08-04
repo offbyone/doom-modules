@@ -8,3 +8,8 @@
 (package! shell-maker)
 (package! acp)
 (package! agent-shell)
+
+(if (modulep! +mcp)
+    (package! mcp-server
+      :recipe (:type git :host github :repo "rhblind/emacs-mcp-server"
+               :files ("*.el" "tools/*.el" "mcp-wrapper.py" "mcp-wrapper.sh"))))
