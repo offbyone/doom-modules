@@ -2,9 +2,7 @@
 
 (use-package! chezmoi
   :commands (chezmoi-write
-             chezmoi-magit-status
              chezmoi-diff
-             chezmoi-ediff
              chezmoi-find
              chezmoi-write-files
              chezmoi-open-other
@@ -44,3 +42,13 @@
           (remove-hook 'evil-insert-state-exit-hook #'+chezmoi--evil-insert-state-exit-h 1))))
 
     (add-hook 'chezmoi-mode-hook #'+chezmoi--evil-h)))
+
+(use-package! chezmoi-process
+  :after chezmoi
+  :config
+  (chezmoi-process-mode 1))
+
+(use-package! chezmoi-ediff
+  :after chezmoi
+  :commands chezmoi-ediff)
+
