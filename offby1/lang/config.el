@@ -19,6 +19,9 @@
   (use-package! go-template-mode
     :mode ("\\.tmpl\\'" . go-template-mode)))
 
+(if (modulep! +markdown-ts)
+    (load! "markdown/config.el" nil t))
+
 (cond (IS-MAC (use-package! osx-plist)))
 
 (use-package! scad-mode
